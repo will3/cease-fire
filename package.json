@@ -1,0 +1,20 @@
+{
+  "name": "cease-fire",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/cannon": "^0.1.4",
+    "@types/lodash": "^4.14.144",
+    "@types/uuid": "^3.4.6",
+    "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "cannon": "^0.6.2",
+    "keycode": "^2.2.0",
+    "lodash": "^4.17.15",
+    "postprocessing": "^6.8.8",
+    "three": "^0.110.0",
+    "uuid": "^3.3.3"
+  }
+}
