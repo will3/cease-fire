@@ -5,18 +5,26 @@
   "license": "MIT",
   "devDependencies": {
     "@types/cannon": "^0.1.4",
+    "@types/express": "^4.17.2",
     "@types/lodash": "^4.14.144",
+    "@types/socket.io": "^2.1.4",
+    "@types/socket.io-client": "^1.4.32",
     "@types/uuid": "^3.4.6",
+    "ts-node": "^8.4.1",
     "typescript": "^3.7.2"
   },
   "dependencies": {
     "cannon": "^0.6.2",
+    "express": "^4.17.1",
     "keycode": "^2.2.0",
     "lodash": "^4.17.15",
     "postprocessing": "^6.8.8",
     "shader-particle-engine": "^1.0.6",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
     "three": "^0.110.0",
     "three.proton.js": "^0.1.5",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "v8": "^0.1.0"
   }
 }

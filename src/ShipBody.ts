@@ -3,16 +3,23 @@ import { Vector3, Mesh, Color, MeshBasicMaterial, Object3D, Material } from "thr
 import _ from "lodash";
 import { Mesher } from "./Mesher";
 import { Chunk } from "./Chunk";
+import { getMaterial } from "./materials";
 
 export default class ShipBody extends Component {
     chunk = new Chunk([0, 0, 0]);
     object = new Object3D();
-    material: Material;
+    material?: Material;
     inner = new Object3D();
 
     start() {
         const voxels = [];
         const wingLength = 11;
+
+        this.material = getMaterial("shipMaterial", () => {
+            return new MeshBasicMaterial({
+                color: new Color(0.2, 0.6, 0.8)
+            });
+        })
 
         addWeapon(1);
         addCargo(4);

@@ -1,29 +1,43 @@
 import guid from "uuid/v4";
 import { Object3D, Scene, Clock } from "three";
 import { Input } from "./Input";
+import Runner from "./Runner";
 
 export default class Component {
-    parent: Object3D;
-    scene: Scene;
-    input: Input;
-    clock: Clock;
-    addComponent: (component: Component) => void;
-    id = guid();
+    type!: string;
+
+    parent!: Object3D;
+    scene!: Scene;
+    input!: Input;
+    clock!: Clock;
+    runner!: Runner;
+
     shouldDestroy = false;
-    private _started = false;
+    started = false;
+
+    isServer = false;
+    ownerId?: string;
+    id = guid();
+
     startIfNeeded() {
-        if (this._started) {
+        if (this.started) {
             return;
         }
         this.start();
-        this._started = true;
+        this.started = true;
     }
 
     start() { }
     update() { }
     onDestroy() { }
+    serialize(): any { return {}; }
+    deserialize(data: any) { }
 
     destroy() {
         this.shouldDestroy = true;
     }
+
+    addComponent(component: Component) {
+        this.runner.addComponent(component);
+    };
 };

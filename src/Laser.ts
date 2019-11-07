@@ -3,14 +3,14 @@ import { SpriteMaterial, Sprite, Object3D, Euler, Vector3 } from "three";
 import { getMaterial } from "./materials";
 
 export default class Laser extends Component {
-    material: SpriteMaterial;
+    material?: SpriteMaterial;
+    a?: Object3D;
+    b?: Object3D;
+    c?: Object3D;
     object = new Object3D();
     velocity = 6;
     velocityScale = 1.0;
     first = true;
-    a: Object3D;
-    b: Object3D;
-    c: Object3D;
 
     start() {
         this.material = getMaterial("laser", () => new SpriteMaterial({
@@ -33,8 +33,8 @@ export default class Laser extends Component {
         this.object.position.add(forwardVector.multiplyScalar(this.velocity * this.velocityScale));
         const scale = 1.5 * Math.pow(this.velocityScale, 0.4);
         this.object.scale.set(scale, scale, scale);
-        this.b.position.set(0, 0, 1.2 * this.velocityScale);
-        this.c.position.set(0, 0, 2.4 * this.velocityScale);
+        this.b!.position.set(0, 0, 1.2 * this.velocityScale);
+        this.c!.position.set(0, 0, 2.4 * this.velocityScale);
 
         if (this.velocityScale < 0.1) {
             this.destroy();

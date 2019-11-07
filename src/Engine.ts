@@ -1,23 +1,26 @@
 import Component from "./Component";
 import { Texture, Object3D, ImageUtils, Quaternion, Vector3, Euler } from "three";
 import * as THREE from "three";
-window["THREE"] = THREE;
-import SPE from "shader-particle-engine";
-
-const image = new Image();
-image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
-const texture = new Texture(image);
-image.onload = () => {
-    texture.needsUpdate = true;
-}
 
 export default class Engine extends Component {
     group: any;
-    object: Object3D;
+    object?: Object3D;
     emitter: any;
     amount = 1.0;
 
     start() {
+        // TODO use shared image
+        const image = new Image();
+        image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
+        const texture = new Texture(image);
+        image.onload = () => {
+            texture.needsUpdate = true;
+        };
+
+        // @ts-ignore
+        window["THREE"] = THREE;
+        const SPE = require("shader-particle-engine");
+
         this.group = new SPE.Group({
             texture: {
                 value: texture

@@ -1,10 +1,13 @@
 import Component from "./Component";
-import { Object3D, Euler, Vector3 } from "three";
+import { Euler, Vector3 } from "three";
 import Laser from "./Laser";
 import Engine from "./Engine";
+import ShipBody from "./ShipBody";
 
 export default class ShipControl extends Component {
-    object: Object3D;
+    shipBody?: ShipBody;
+    leftEngine?: Engine;
+    rightEngine?: Engine;
     rotation = new Euler(0, 0, 0, "YXZ");
     maxRoll = Math.PI / 5;
     rotationVelocity = new Vector3();
@@ -16,8 +19,6 @@ export default class ShipControl extends Component {
     fireSpot = 0;
     moveFriction = 0.9;
     restFriction = 0.95;
-    leftEngine: Engine;
-    rightEngine: Engine;
 
     update() {
         const left = this.input.key("a") ? 1.0 : 0.0 - (this.input.key("d") ? 1.0 : 0.0);
@@ -48,13 +49,14 @@ export default class ShipControl extends Component {
         const speedRatio = this.velocity.length() / maxSpeed;
         this.rotation.y += Math.sin(this.rotation.z) * 0.1 * speedRatio;
 
-        this.object.position.add(this.velocity);
-        this.object.rotation.copy(this.rotation);
+        const object = this.shipBody!.object;
+        object.position.add(this.velocity);
+        object.rotation.copy(this.rotation);
 
-        this.object.position.y = 0;
-        this.object.rotation.x = 0;
+        object.position.y = 0;
+        object.rotation.x = 0;
 
-        // this.object.position.set(0, 0, 0);
+        // object.position.set(0, 0, 0);
 
         if (fire) {
             if (this.fireAmount > this.fireInterval) {
@@ -64,7 +66,7 @@ export default class ShipControl extends Component {
                 const x = [-0.5, 0, 0.5];
                 const dir = new Vector3(x[this.fireSpot], 0, -1).applyEuler(rotation);
                 laser.object.rotation.copy(rotation);
-                laser.object.position.copy(this.object.position.clone().add(dir.multiplyScalar(2)));
+                laser.object.position.copy(object.position.clone().add(dir.multiplyScalar(2)));
                 this.addComponent(laser);
                 this.fireAmount = 0;
                 this.fireSpot += 1;
@@ -73,8 +75,8 @@ export default class ShipControl extends Component {
 
         this.fireAmount += 1 / 60;
 
-        this.leftEngine.amount = forward;
-        this.rightEngine.amount = forward;
+        this.leftEngine!.amount = forward;
+        this.rightEngine!.amount = forward;
     }
 }
 
