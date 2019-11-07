@@ -8,6 +8,7 @@ export default class ShipBody extends Component {
     chunk = new Chunk([0, 0, 0]);
     object = new Object3D();
     material: Material;
+    inner = new Object3D();
 
     start() {
         const voxels = [];
@@ -59,10 +60,10 @@ export default class ShipBody extends Component {
 
         const geometry = Mesher.mesh(this.chunk);
         const mesh = new Mesh(geometry, this.material);
-        mesh.position.copy(center.multiplyScalar(-1));
-        this.object.add(mesh);
-        this.scene.add(this.object);
-        mesh.receiveShadow = true;
-        mesh.castShadow = true;
+        this.parent.add(this.object);
+        this.inner.add(mesh);
+        this.object.add(this.inner);
+        this.inner.position.copy(center.multiplyScalar(-1));
     }
 };
+

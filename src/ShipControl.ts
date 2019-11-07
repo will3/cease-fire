@@ -1,6 +1,7 @@
 import Component from "./Component";
 import { Object3D, Euler, Vector3 } from "three";
 import Laser from "./Laser";
+import Engine from "./Engine";
 
 export default class ShipControl extends Component {
     object: Object3D;
@@ -9,10 +10,14 @@ export default class ShipControl extends Component {
     rotationVelocity = new Vector3();
     velocity = new Vector3();
     rotationAcc = new Vector3(0, 0, 0.2);
-    acc = 0.12;
+    acc = 0.06;
     fireAmount = 0;
     fireInterval = 0.1;
     fireSpot = 0;
+    moveFriction = 0.9;
+    restFriction = 0.95;
+    leftEngine: Engine;
+    rightEngine: Engine;
 
     update() {
         const left = this.input.key("a") ? 1.0 : 0.0 - (this.input.key("d") ? 1.0 : 0.0);
@@ -33,7 +38,7 @@ export default class ShipControl extends Component {
         const rollAcc = clamp(targetRollAcc, -this.rotationAcc.z, this.rotationAcc.z);
 
         this.velocity.add(forwardVector.clone().multiplyScalar(this.acc * forward));
-        const friction = forward > 0 ? 0.9 : 0.95;
+        const friction = forward > 0 ? this.moveFriction : this.restFriction;
         this.velocity.multiplyScalar(friction);
 
         this.rotationVelocity.z += rollAcc;
@@ -49,7 +54,7 @@ export default class ShipControl extends Component {
         this.object.position.y = 0;
         this.object.rotation.x = 0;
 
-        this.object.position.set(0, 0, 0);
+        // this.object.position.set(0, 0, 0);
 
         if (fire) {
             if (this.fireAmount > this.fireInterval) {
@@ -67,6 +72,9 @@ export default class ShipControl extends Component {
         }
 
         this.fireAmount += 1 / 60;
+
+        this.leftEngine.amount = forward;
+        this.rightEngine.amount = forward;
     }
 }
 

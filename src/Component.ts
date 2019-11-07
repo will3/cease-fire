@@ -1,10 +1,12 @@
 import guid from "uuid/v4";
-import { Scene } from "three";
+import { Object3D, Scene, Clock } from "three";
 import { Input } from "./Input";
 
 export default class Component {
+    parent: Object3D;
     scene: Scene;
     input: Input;
+    clock: Clock;
     addComponent: (component: Component) => void;
     id = guid();
     shouldDestroy = false;

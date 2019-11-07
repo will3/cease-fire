@@ -44,10 +44,27 @@ postprocessing@^6.8.8:
   resolved "https://registry.yarnpkg.com/postprocessing/-/postprocessing-6.8.8.tgz#59a97e8372f6c0c62bb1d41c05bd54c6bde58146"
   integrity sha512-U1id42f/38cMmzWmR98UuWXyYJ8UGTDoLabDskcC2AbTqfjtvbLI5/EM8GS+xAx1bwW+30TLIMAUtoWWeVTw1A==
 
+shader-particle-engine@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/shader-particle-engine/-/shader-particle-engine-1.0.6.tgz#94f73d7eb13760bd4c38713ac1e178fdc606215a"
+  integrity sha1-lPc9frE3YL1MOHE6weF4/cYGIVo=
+  dependencies:
+    three "^0.84.0"
+
+three.proton.js@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/three.proton.js/-/three.proton.js-0.1.5.tgz#3ae32fd9cf3b5698e3b546946e53badbda04948e"
+  integrity sha512-6RlDLJMzJWOWeMaBuEYIgLDeC/Tuqih4zCQ5gi5JZMR2T0N9Hebpreo+6O7eeuj3yIwRX/VnLmTgWHd92p0eQA==
+
 three@^0.110.0:
   version "0.110.0"
   resolved "https://registry.yarnpkg.com/three/-/three-0.110.0.tgz#8719591de1336269113ee79f4268ba247b2324f8"
   integrity sha512-wlurH8XBO9Sd5VIw8nBa+taLR20kqaI4e9FiuMh6tqK8eOS2q2R+ZoUyufbyDTVTHhs8GiTbv0r2CMLkwerFJg==
+
+three@^0.84.0:
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.84.0.tgz#95be85a55a0fa002aa625ed559130957dcffd918"
+  integrity sha1-lb6FpVoPoAKqYl7VWRMJV9z/2Rg=
 
 typescript@^3.7.2:
   version "3.7.2"

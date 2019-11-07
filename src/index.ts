@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, DirectionalLight, Color, Object3D, AmbientLight, MeshBasicMaterial } from "three";
+import { Scene, PerspectiveCamera, WebGLRenderer, DirectionalLight, Color, Object3D, AmbientLight, MeshBasicMaterial, Vector3, Clock } from "three";
 import Component from "./Component";
 import CameraController from "./CameraController";
 import ShipBody from "./ShipBody";
@@ -6,6 +6,7 @@ import { EffectComposer, RenderPass, EffectPass, BloomEffect, PixelationEffect }
 import { Input } from "./Input";
 import ShipControl from "./ShipControl";
 import _ from "lodash";
+import Engine from "./Engine";
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -39,6 +40,9 @@ window.addEventListener("resize", () => {
 
 const input = new Input();
 
+const clock = new Clock();
+clock.start();
+
 function animate() {
     for (let id in components) {
         const component = components[id];
@@ -70,9 +74,11 @@ animate();
 
 const addComponent = (component: Component) => {
     components[component.id] = component;
+    component.parent = component.parent || scene;
     component.scene = scene;
     component.input = input;
     component.addComponent = addComponent;
+    component.clock = clock;
 }
 
 const cameraController = new CameraController();
@@ -87,6 +93,24 @@ const ship = new ShipBody();
 ship.material = shipMaterial;
 addComponent(ship);
 
+const leftEngine = new Object3D();
+const rightEngine = new Object3D();
+ship.inner.add(leftEngine);
+ship.inner.add(rightEngine);
+const offset = new Vector3(1.5, 1.5, 2.5);
+leftEngine.position.set(1, 0, 5).add(offset);
+rightEngine.position.set(9, 0, 5).add(offset);
+
+const left = new Engine();
+left.parent = leftEngine;
+addComponent(left);
+
+const right = new Engine();
+right.parent = rightEngine;
+addComponent(right);
+
 const shipControl = new ShipControl();
 shipControl.object = ship.object;
+shipControl.leftEngine = left;
+shipControl.rightEngine = right;
 addComponent(shipControl);

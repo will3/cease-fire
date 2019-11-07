@@ -24,12 +24,12 @@ export default class Laser extends Component {
         this.c.scale.set(0.8, 0.8, 0.8);
         this.object.scale.multiplyScalar(1.5);
         this.object.add(this.a, this.b, this.c);
-        this.scene.add(this.object);
+        this.parent.add(this.object);
     }
 
     update() {
         const forwardVector = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
-        this.velocityScale *= 0.95;
+        this.velocityScale *= 0.97;
         this.object.position.add(forwardVector.multiplyScalar(this.velocity * this.velocityScale));
         const scale = 1.5 * Math.pow(this.velocityScale, 0.4);
         this.object.scale.set(scale, scale, scale);
@@ -42,6 +42,6 @@ export default class Laser extends Component {
     }
 
     onDestroy() {
-        this.scene.remove(this.object);
+        this.parent.remove(this.object);
     }
 };
