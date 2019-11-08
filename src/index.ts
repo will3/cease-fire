@@ -1,3 +1,12 @@
+import _ from "lodash";
+import {
+    EffectComposer,
+    EffectPass,
+    PixelationEffect,
+    RenderPass,
+    // @ts-ignore
+} from "postprocessing";
+import SocketIOClient from "socket.io-client";
 import {
     AmbientLight,
     Clock,
@@ -8,19 +17,10 @@ import {
     WebGLRenderer,
 } from "three";
 import CameraController from "./components/CameraController";
-import {
-    EffectComposer,
-    EffectPass,
-    PixelationEffect,
-    RenderPass,
-    // @ts-ignore
-} from "postprocessing";
-import { Input } from "./core/Input";
-import _ from "lodash";
-import createClient from "./networking/Client";
 import Ship from "./components/Ship";
-import SocketIOClient from "socket.io-client";
+import { Input } from "./core/Input";
 import Runner from "./core/Runner";
+import createClient from "./networking/Client";
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -64,7 +64,7 @@ function animate() {
     input.clear();
 }
 
-const runner = new Runner(false, scene, input, clock);
+const runner = new Runner(scene, input, clock);
 
 const cameraController = new CameraController();
 cameraController.camera = camera;

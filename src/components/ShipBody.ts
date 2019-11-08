@@ -1,25 +1,26 @@
-import Component from "../core/Component";
-import { Vector3, Mesh, Color, MeshBasicMaterial, Object3D, Material } from "three";
 import _ from "lodash";
-import { Mesher } from "../voxel/Mesher";
-import { Chunk } from "../voxel/Chunk";
+import { Color, Material, Mesh, MeshBasicMaterial, Object3D, Vector3 } from "three";
+import Component from "../core/Component";
 import { getMaterial } from "../materials";
+import Chunk from "../voxel/Chunk";
+import { Mesher } from "../voxel/Mesher";
 
 export default class ShipBody extends Component {
-    chunk = new Chunk([0, 0, 0]);
-    object = new Object3D();
-    material?: Material;
-    inner = new Object3D();
+    public object = new Object3D();
+    public inner = new Object3D();
 
-    start() {
+    private chunk = new Chunk([0, 0, 0]);
+    private material?: Material;
+
+    public start() {
         const voxels = [];
         const wingLength = 11;
 
         this.material = getMaterial("shipMaterial", () => {
             return new MeshBasicMaterial({
-                color: new Color(0.2, 0.6, 0.8)
+                color: new Color(0.2, 0.6, 0.8),
             });
-        })
+        });
 
         addWeapon(1);
         addCargo(4);
@@ -32,20 +33,20 @@ export default class ShipBody extends Component {
                 [i, 0, 2],
                 [i, 0, 5],
             );
-        };
+        }
 
         function addCargo(i: number) {
             voxels.push(
                 [i, 0, 2],
                 [i, 0, 5]);
-        };
+        }
 
         for (let i = 0; i < wingLength; i++) {
             voxels.push([i, 0, 3]);
             voxels.push([i, 0, 4]);
         }
 
-        voxels.forEach(v => {
+        voxels.forEach((v) => {
             v[0] += 1;
             v[1] += 1;
             v[2] += 1;
@@ -60,10 +61,9 @@ export default class ShipBody extends Component {
 
         const center = new Vector3().fromArray(sum).multiplyScalar(1 / voxels.length).add(new Vector3(0.5, 0.5, 0.5));
 
-        for (let i = 0; i < voxels.length; i++) {
-            const v = voxels[i];
+        voxels.forEach((v) => {
             this.chunk.set(v[0], v[1], v[2], 1);
-        }
+        });
 
         const geometry = Mesher.mesh(this.chunk);
         const mesh = new Mesh(geometry, this.material);
@@ -72,5 +72,4 @@ export default class ShipBody extends Component {
         this.object.add(this.inner);
         this.inner.position.copy(center.multiplyScalar(-1));
     }
-};
-
+}

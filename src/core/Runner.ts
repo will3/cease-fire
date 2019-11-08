@@ -1,33 +1,30 @@
-import Component from "./Component";
-import { Scene, Clock } from "three";
-import { Input } from "./Input";
 import _ from "lodash";
+import { Clock, Scene } from "three";
+import Component from "./Component";
+import { Input } from "./Input";
 
 export default class Runner {
-    components: { [id: string]: Component } = {};
-    scene: Scene;
-    input: Input;
-    clock: Clock;
-    isServer: boolean;
+    private components: { [id: string]: Component } = {};
+    private scene: Scene;
+    private input: Input;
+    private clock: Clock;
 
     constructor(
-        isServer: boolean,
         scene: Scene,
         input?: Input,
         clock?: Clock,
     ) {
-        this.isServer = isServer;
         this.scene = scene;
         this.input = input!;
         this.clock = clock!;
     }
 
-    addComponent = (component: Component) => {
+    public addComponent = (component: Component) => {
         this.components[component.id] = component;
         this.injectDeps(component);
     }
 
-    injectDeps(component: Component) {
+    public injectDeps(component: Component) {
         component.parent = component.parent || this.scene;
         component.scene = this.scene;
         component.input = this.input;
@@ -35,27 +32,27 @@ export default class Runner {
         component.clock = this.clock;
     }
 
-    update() {
-        for (let id in this.components) {
-            const component = this.components[id];
+    public update() {
+        _.forEach(this.components, (component) => {
             component.startIfNeeded();
-        }
+        });
 
-        for (let id in this.components) {
-            const component = this.components[id];
+        _.forEach(this.components, (component) => {
             if (component.started) {
                 component.update();
             }
-        }
+        });
 
-        const componentsToDestroy = _(this.components).values().filter(v => {
-            return v.shouldDestroy;
-        }).value();
+        const componentsToDestroy = _(this.components)
+            .values()
+            .filter((v) => {
+                return v.shouldDestroy;
+            })
+            .value();
 
-        for (let i = 0; i < componentsToDestroy.length; i++) {
-            const component = componentsToDestroy[i];
+        for (const component of componentsToDestroy) {
             component.onDestroy();
             delete this.components[component.id];
         }
     }
-};
+}

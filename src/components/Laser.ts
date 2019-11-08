@@ -1,20 +1,21 @@
+import { Object3D, Sprite, SpriteMaterial, Vector3 } from "three";
+
 import Component from "../core/Component";
-import { SpriteMaterial, Sprite, Object3D, Euler, Vector3 } from "three";
 import { getMaterial } from "../materials";
 
 export default class Laser extends Component {
-    material?: SpriteMaterial;
-    a?: Object3D;
-    b?: Object3D;
-    c?: Object3D;
-    object = new Object3D();
-    velocity = 6;
-    velocityScale = 1.0;
-    first = true;
+    public material?: SpriteMaterial;
+    public object = new Object3D();
+    public velocity = 6;
 
-    start() {
+    private a?: Object3D;
+    private b?: Object3D;
+    private c?: Object3D;
+    private velocityScale = 1.0;
+
+    public start() {
         this.material = getMaterial("laser", () => new SpriteMaterial({
-            color: 0xffffff
+            color: 0xffffff,
         })) as SpriteMaterial;
         this.a = new Sprite(this.material);
         this.b = new Sprite(this.material);
@@ -27,7 +28,7 @@ export default class Laser extends Component {
         this.parent.add(this.object);
     }
 
-    update() {
+    public update() {
         const forwardVector = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
         this.velocityScale *= 0.97;
         this.object.position.add(forwardVector.multiplyScalar(this.velocity * this.velocityScale));
@@ -41,7 +42,7 @@ export default class Laser extends Component {
         }
     }
 
-    onDestroy() {
+    public onDestroy() {
         this.parent.remove(this.object);
     }
-};
+}

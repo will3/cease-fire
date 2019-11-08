@@ -28,5 +28,10 @@
     "three.proton.js": "^0.1.5",
     "uuid": "^3.3.3",
     "v8": "^0.1.0"
+  },
+  "scripts": {
+    "start": "nodemon",
+    "parcel": "parcel index.html",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'"
   }
 }

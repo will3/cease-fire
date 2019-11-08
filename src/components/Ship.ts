@@ -1,15 +1,16 @@
-import Component from "../core/Component";
-import ShipBody from "./ShipBody";
 import { Object3D, Vector3 } from "three";
+
+import Component from "../core/Component";
 import Engine from "./Engine";
+import ShipBody from "./ShipBody";
 import ShipControl from "./ShipControl";
 
 export default class Ship extends Component {
-    type = "Ship";
-    isRemote = true;
-    ship!: ShipBody;
+    public type = "Ship";
+    public isRemote = true;
+    public ship!: ShipBody;
 
-    start() {
+    public start() {
         this.ship = new ShipBody();
         this.addComponent(this.ship);
 
@@ -38,22 +39,22 @@ export default class Ship extends Component {
         }
     }
 
-    serialize(): ShipData {
+    public serialize(): IShipData {
         this.startIfNeeded();
         return {
             position: this.ship.object.position.toArray(),
-            rotation: this.ship.object.rotation.toArray()
+            rotation: this.ship.object.rotation.toArray(),
         };
     }
 
-    deserialize(data: ShipData) {
+    public deserialize(data: IShipData) {
         this.startIfNeeded();
         this.ship.object.position.fromArray(data.position);
         this.ship.object.rotation.fromArray(data.rotation);
     }
-};
+}
 
-interface ShipData {
+interface IShipData {
     position: number[];
     rotation: number[];
-};
+}

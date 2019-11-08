@@ -1,26 +1,26 @@
-import Component from "../core/Component";
 import { Euler, Vector3 } from "three";
-import Laser from "./Laser";
+import Component from "../core/Component";
 import Engine from "./Engine";
+import Laser from "./Laser";
 import ShipBody from "./ShipBody";
 
 export default class ShipControl extends Component {
-    shipBody?: ShipBody;
-    leftEngine?: Engine;
-    rightEngine?: Engine;
-    rotation = new Euler(0, 0, 0, "YXZ");
-    maxRoll = Math.PI / 5;
-    rotationVelocity = new Vector3();
-    velocity = new Vector3();
-    rotationAcc = new Vector3(0, 0, 0.2);
-    acc = 0.06;
-    fireAmount = 0;
-    fireInterval = 0.1;
-    fireSpot = 0;
-    moveFriction = 0.9;
-    restFriction = 0.95;
+    public shipBody?: ShipBody;
+    public leftEngine?: Engine;
+    public rightEngine?: Engine;
+    public rotation = new Euler(0, 0, 0, "YXZ");
+    public maxRoll = Math.PI / 5;
+    public rotationVelocity = new Vector3();
+    public velocity = new Vector3();
+    public rotationAcc = new Vector3(0, 0, 0.2);
+    public acc = 0.06;
+    public fireAmount = 0;
+    public fireInterval = 0.1;
+    public fireSpot = 0;
+    public moveFriction = 0.9;
+    public restFriction = 0.95;
 
-    update() {
+    public update() {
         const left = this.input.key("a") ? 1.0 : 0.0 - (this.input.key("d") ? 1.0 : 0.0);
         let forward = this.input.key("w") ? 1.0 : 0.0 - (this.input.key("s") ? 1.0 : 0.0);
         const fire = this.input.key("j");
@@ -28,7 +28,7 @@ export default class ShipControl extends Component {
         if (forward < 0) {
             forward = 0;
         }
-        if (forward == 0 && left !== 0) {
+        if (forward === 0 && left !== 0) {
             forward = 1.0;
         }
         const forwardVector = new Vector3(0, 0, -1).applyEuler(this.rotation);

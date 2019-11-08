@@ -5,30 +5,30 @@ export class Input {
     private keyups: { [key: string]: boolean } = {};
     private keys: { [key: string]: boolean } = {};
     constructor() {
-        window.addEventListener("keydown", e => {
+        window.addEventListener("keydown", (e) => {
             const key = keycode(e);
             if (!this.keys[key]) {
                 this.keydowns[key] = true;
             }
             this.keys[key] = true;
         });
-        window.addEventListener("keyup", e => {
+        window.addEventListener("keyup", (e) => {
             const key = keycode(e);
             this.keyups[key] = true;
             this.keys[key] = false;
         });
     }
-    clear() {
+    public clear() {
         this.keydowns = {};
         this.keyups = {};
     }
-    key(key: string) {
+    public key(key: string) {
         return this.keys[key] || false;
     }
-    keydown(key: string) {
+    public keydown(key: string) {
         return this.keydowns[key] || false;
     }
-    keyup(key: string) {
+    public keyup(key: string) {
         return this.keyups[key] || false;
     }
 }

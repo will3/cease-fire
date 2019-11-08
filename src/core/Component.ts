@@ -1,26 +1,27 @@
+import { Clock, Object3D, Scene } from "three";
 import guid from "uuid/v4";
-import { Object3D, Scene, Clock } from "three";
+
 import { Input } from "./Input";
 import Runner from "./Runner";
 
 export default class Component {
-    type!: string;
+    public type!: string;
 
-    parent!: Object3D;
-    scene!: Scene;
-    input!: Input;
-    clock!: Clock;
-    runner!: Runner;
+    public parent!: Object3D;
+    public scene!: Scene;
+    public input!: Input;
+    public clock!: Clock;
+    public runner!: Runner;
 
-    shouldDestroy = false;
-    started = false;
+    public shouldDestroy = false;
+    public started = false;
 
-    isRemote = false;
-    isServer = false;
-    ownerId?: string;
-    id = guid();
+    public isRemote = false;
+    public isServer = false;
+    public ownerId?: string;
+    public id = guid();
 
-    startIfNeeded() {
+    public startIfNeeded() {
         if (this.started) {
             return;
         }
@@ -28,17 +29,25 @@ export default class Component {
         this.started = true;
     }
 
-    start() { }
-    update() { }
-    onDestroy() { }
-    serialize(): any { return {}; }
-    deserialize(data: any) { }
+    public start() {
+        // TODO override
+    }
+    public update() {
+        // TODO override
+    }
+    public onDestroy() {
+        // TODO override
+    }
+    public serialize(): any { return {}; }
+    public deserialize(_: any) {
+        // TODO override
+    }
 
-    destroy() {
+    public destroy() {
         this.shouldDestroy = true;
     }
 
-    addComponent(component: Component) {
+    public addComponent(component: Component) {
         this.runner.addComponent(component);
-    };
-};
+    }
+}
