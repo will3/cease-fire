@@ -1,18 +1,14 @@
 import { Scene, PerspectiveCamera, WebGLRenderer, DirectionalLight, Color, Object3D, AmbientLight, MeshBasicMaterial, Vector3, Clock } from "three";
-import CameraController from "./CameraController";
+import CameraController from "./components/CameraController";
 // @ts-ignore
 import { EffectComposer, RenderPass, EffectPass, PixelationEffect } from "postprocessing";
-import { Input } from "./Input";
+import { Input } from "./core/Input";
 import _ from "lodash";
-import Ship from "./Ship";
-import Runner from "./Runner";
-import registry from "./registry";
-import io from "socket.io-client";
-import Component from "./Component";
-import ComponentData from "./ComponentData";
-import guid from "uuid/v4";
+import Ship from "./components/Ship";
+import Runner from "./core/Runner";
+import SocketIOClient from "socket.io-client";
+import createClient from "./networking/Client";
 
-const socket = io();
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.z = 5;
@@ -50,7 +46,7 @@ clock.start();
 function animate() {
     runner.update();
     // renderer.render(scene, camera);
-    composer.render();
+    // composer.render();
     requestAnimationFrame(animate);
     input.clear();
 }
@@ -67,18 +63,10 @@ runner.addComponent(ship);
 
 animate();
 
-const clientId = guid();
+const socket = SocketIOClient();
+const client = createClient({
+    runner,
+    socket
+});
 
-function spawn(components: Component[]) {
-    socket.emit("spawn", _.map(components, c => {
-        const data: ComponentData = {
-            id: c.id,
-            ownerId: clientId,
-            type: c.type,
-            data: c.serialize()
-        }
-        return data;
-    }));
-}
-
-spawn([ship]);
+client.spawn(ship);

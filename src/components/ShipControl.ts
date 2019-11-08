@@ -1,4 +1,4 @@
-import Component from "./Component";
+import Component from "../core/Component";
 import { Euler, Vector3 } from "three";
 import Laser from "./Laser";
 import Engine from "./Engine";

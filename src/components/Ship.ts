@@ -1,4 +1,4 @@
-import Component from "./Component";
+import Component from "../core/Component";
 import ShipBody from "./ShipBody";
 import { Object3D, Vector3 } from "three";
 import Engine from "./Engine";

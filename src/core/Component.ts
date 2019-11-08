@@ -15,6 +15,7 @@ export default class Component {
     shouldDestroy = false;
     started = false;
 
+    isRemote = false;
     isServer = false;
     ownerId?: string;
     id = guid();

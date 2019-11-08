@@ -1,4 +1,4 @@
-import Component from "./Component";
+import Component from "../core/Component";
 import { Texture, Object3D, ImageUtils, Quaternion, Vector3, Euler } from "three";
 import * as THREE from "three";
 

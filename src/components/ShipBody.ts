@@ -1,9 +1,9 @@
-import Component from "./Component";
+import Component from "../core/Component";
 import { Vector3, Mesh, Color, MeshBasicMaterial, Object3D, Material } from "three";
 import _ from "lodash";
-import { Mesher } from "./Mesher";
-import { Chunk } from "./Chunk";
-import { getMaterial } from "./materials";
+import { Mesher } from "../voxel/Mesher";
+import { Chunk } from "../voxel/Chunk";
+import { getMaterial } from "../materials";
 
 export default class ShipBody extends Component {
     chunk = new Chunk([0, 0, 0]);

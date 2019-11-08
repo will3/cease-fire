@@ -1,5 +1,5 @@
 import { Camera, Euler, Vector3 } from "three";
-import Component from "./Component";
+import Component from "../core/Component";
 
 export default class CameraController extends Component {
     camera!: Camera;

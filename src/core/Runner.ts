@@ -24,6 +24,10 @@ export default class Runner {
 
     addComponent = (component: Component) => {
         this.components[component.id] = component;
+        this.injectDeps(component);
+    }
+
+    injectDeps(component: Component) {
         component.parent = component.parent || this.scene;
         component.scene = this.scene;
         component.input = this.input;

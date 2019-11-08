@@ -1,6 +1,6 @@
-import Component from "./Component";
+import Component from "../core/Component";
 import { SpriteMaterial, Sprite, Object3D, Euler, Vector3 } from "three";
-import { getMaterial } from "./materials";
+import { getMaterial } from "../materials";
 
 export default class Laser extends Component {
     material?: SpriteMaterial;
