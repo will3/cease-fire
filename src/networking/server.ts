@@ -45,16 +45,16 @@ export default (options: ServerOptions) => {
     const getClientState = (id: string): State => {
         const components =
             _(runner.components)
-                .filter(c => c.isRemote)
-                .map(c => getComponentState(c))
+                .filter((c) => c.isRemote)
+                .map((c) => getComponentState(c))
                 .value();
 
         const state = {
-            components
+            components,
         };
 
         return state;
-    }
+    };
 
     const processCommands = () => {
         const commands = commandBuffer.splice(0);

@@ -76,6 +76,14 @@ const playerId = guid();
 const ship = new Ship();
 ship.ownerId = playerId;
 runner.addComponent(ship);
+ship.startIfNeeded();
+
+ship.body.object.position.set(
+    (Math.random() - 0.5) * 2 * 40,
+    0,
+    (Math.random() - 0.5) * 2 * 40,
+);
+ship.body.object.rotation.y = Math.random() * Math.PI * 2;
 
 animate();
 
