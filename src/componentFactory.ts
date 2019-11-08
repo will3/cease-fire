@@ -9,7 +9,7 @@ const componentFactory = {
             default:
                 throw new Error(`Unknown type ${type}`);
         }
-    }
+    },
 } as ComponentFactory;
 
 export default componentFactory;

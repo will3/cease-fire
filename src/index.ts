@@ -1,13 +1,26 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, DirectionalLight, Color, Object3D, AmbientLight, MeshBasicMaterial, Vector3, Clock } from "three";
+import {
+    AmbientLight,
+    Clock,
+    Color,
+    DirectionalLight,
+    PerspectiveCamera,
+    Scene,
+    WebGLRenderer,
+} from "three";
 import CameraController from "./components/CameraController";
-// @ts-ignore
-import { EffectComposer, RenderPass, EffectPass, PixelationEffect } from "postprocessing";
+import {
+    EffectComposer,
+    EffectPass,
+    PixelationEffect,
+    RenderPass,
+    // @ts-ignore
+} from "postprocessing";
 import { Input } from "./core/Input";
 import _ from "lodash";
-import Ship from "./components/Ship";
-import Runner from "./core/Runner";
-import SocketIOClient from "socket.io-client";
 import createClient from "./networking/Client";
+import Ship from "./components/Ship";
+import SocketIOClient from "socket.io-client";
+import Runner from "./core/Runner";
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -66,7 +79,7 @@ animate();
 const socket = SocketIOClient();
 const client = createClient({
     runner,
-    socket
+    socket,
 });
 
 client.spawn(ship);

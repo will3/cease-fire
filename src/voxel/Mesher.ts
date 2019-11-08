@@ -1,7 +1,7 @@
-import { Vector3, Geometry, Face3 } from "three";
-import { Chunk } from "./Chunk";
+import { Face3, Geometry, Vector3 } from "three";
+import Chunk from "./Chunk";
 export class Mesher {
-    static mesh(chunk: Chunk) {
+    public static mesh(chunk: Chunk) {
         const size = chunk.size;
         const geometry = new Geometry();
         const vertices: Vector3[] = [];
@@ -12,7 +12,7 @@ export class Mesher {
                     for (let k = 0; k < size; k++) {
                         const a = this.getValue(chunk, i, j, k, d);
                         const b = this.getValue(chunk, i + 1, j, k, d);
-                        if (a > 0 == (b > 0)) {
+                        if (a > 0 === (b > 0)) {
                             continue;
                         }
                         const front = a > 0;
@@ -24,8 +24,7 @@ export class Mesher {
                         vertices.push(v1, v2, v3, v4);
                         if (front) {
                             faces.push(new Face3(index, index + 1, index + 2), new Face3(index + 2, index + 3, index));
-                        }
-                        else {
+                        } else {
                             faces.push(new Face3(index + 2, index + 1, index), new Face3(index, index + 3, index + 2));
                         }
                     }
@@ -37,22 +36,24 @@ export class Mesher {
         geometry.computeFaceNormals();
         return geometry;
     }
-    static getValue(chunk: Chunk, i: number, j: number, k: number, d: number) {
-        if (d == 0) {
-            return chunk.get(i, j, k);
+    private static getValue(chunk: Chunk, i: number, j: number, k: number, d: number) {
+        switch (d) {
+            case 0:
+                return chunk.get(i, j, k);
+            case 1:
+                return chunk.get(k, i, j);
+            default:
+                return chunk.get(j, k, i);
         }
-        if (d == 1) {
-            return chunk.get(k, i, j);
-        }
-        return chunk.get(j, k, i);
     }
-    static getVector(i: number, j: number, k: number, d: number) {
-        if (d == 0) {
-            return new Vector3(i, j, k);
+    private static getVector(i: number, j: number, k: number, d: number) {
+        switch (d) {
+            case 0:
+                return new Vector3(i, j, k);
+            case 1:
+                return new Vector3(k, i, j);
+            default:
+                return new Vector3(j, k, i);
         }
-        if (d == 1) {
-            return new Vector3(k, i, j);
-        }
-        return new Vector3(j, k, i);
     }
 }
