@@ -72,4 +72,8 @@ export default class ShipBody extends Component {
         this.object.add(this.inner);
         this.inner.position.copy(center.multiplyScalar(-1));
     }
+
+    public onDestroy() {
+        this.parent.remove(this.object);
+    }
 }

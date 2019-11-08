@@ -42,6 +42,10 @@ export default class Engine extends Component {
         this.scene.add(this.group.mesh);
     }
 
+    public onDestroy() {
+        this.scene.remove(this.group.mesh);
+    }
+
     public update() {
         this.group.tick(1 / 60);
         if (this.amount === 0) {

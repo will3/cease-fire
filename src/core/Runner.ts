@@ -31,6 +31,7 @@ export default class Runner {
             // TODO update component
             return;
         }
+
         console.log(`spawn ${JSON.stringify(state)}`);
         const component = this.componentFactory.create(state.type);
         this.injectDeps(component);
@@ -65,17 +66,15 @@ export default class Runner {
             }
         });
 
-        const componentsToDestroy = _(this.components)
-            .values()
-            .filter((v) => {
-                return v.shouldDestroy;
+        _(this.components)
+            .filter((c) => {
+                return c.shouldDestroy;
             })
-            .value();
-
-        for (const component of componentsToDestroy) {
-            component.onDestroy();
-            delete this.components[component.id];
-        }
+            .forEach((c) => {
+                c.onDestroy();
+                c.destroyed = true;
+                delete this.components[c.id];
+            });
 
         this.time.deltaTime = dt;
         this.time.elaspedTime += dt;

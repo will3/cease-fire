@@ -75,6 +75,7 @@ const playerId = guid();
 
 const ship = new Ship();
 ship.ownerId = playerId;
+ship.isOwn = true;
 runner.addComponent(ship);
 ship.startIfNeeded();
 
@@ -88,9 +89,11 @@ ship.body.object.rotation.y = Math.random() * Math.PI * 2;
 animate();
 
 const socket = SocketIOClient("http://localhost:3000");
+
 const client = createClient({
     runner,
     socket,
 });
 
+client.join(playerId);
 client.spawn(ship);

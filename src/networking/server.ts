@@ -7,7 +7,8 @@ import { Command } from "./Client";
 import { getComponentState, State } from "./common";
 
 interface Connection {
-    socket: SocketIO.Socket
+    socket: SocketIO.Socket;
+    playerId?: string;
 }
 
 export interface ServerOptions {
@@ -22,14 +23,31 @@ export default (options: ServerOptions) => {
     const { io, runner, componentFactory } = options;
 
     io.on("connection", socket => {
-        connections[socket.id] = {
+        const connection = {
             socket
-        };
+        } as Connection;
+        connections[socket.id] = connection;
+
+        console.log(`player connected socket ${connection.socket.id}`);
 
         socket.on("command", (commands: Command[]) => {
             commands.forEach(c => {
                 commandBuffer.push(c);
             });
+        });
+
+        socket.on("join", (data) => {
+            console.log(`player joined socket ${connection.socket.id} player ${data.playerId}`);
+            connection.playerId = data.playerId;
+        });
+
+        socket.on("disconnect", () => {
+            console.log(`player left socket ${connection.socket.id} player ${connection.playerId}`);
+            _(runner.components)
+                .filter((c) => c.ownerId === connection.playerId)
+                .forEach((c) => {
+                    c.destroy();
+                });
         });
     });
 
