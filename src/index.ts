@@ -26,10 +26,11 @@ import createClient from "./networking/Client";
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 5;
 const renderer = new WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+const main = document.getElementById("main")!;
+main.appendChild(renderer.domElement);
+main.oncontextmenu = () => false;
 
 const directionalLight = new DirectionalLight(new Color(0.9, 0.85, 0.7), 0.4);
 directionalLight.position.set(0.8, 0.5, 0.3);
@@ -66,7 +67,7 @@ function animate() {
     input.clear();
 }
 
-const runner = new Runner({scene, input, clock, componentFactory});
+const runner = new Runner({ scene, input, clock, componentFactory });
 
 const cameraController = new CameraController();
 cameraController.camera = camera;
