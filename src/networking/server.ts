@@ -3,7 +3,9 @@ import { Command } from "./Client";
 import _ from "lodash";
 import Runner from "../core/Runner";
 import { State, getComponentState } from "./common";
-import { ComponentFactory, ComponentState } from "./common";
+import { ComponentFactory } from "../core/ComponentFactory";
+import ComponentState from "../core/ComponentState";
+import util from "util";
 
 interface Connection {
     socket: SocketIO.Socket
@@ -46,17 +48,6 @@ export default (options: ServerOptions) => {
         }
     };
 
-    const spawn = (command: Command) => {
-        console.log(`spawn ${command.data}`);
-        const state: ComponentState = command.data;
-        const component = componentFactory.create(state.type);
-        runner.injectDeps(component);
-        component.isServer = true;
-        component.deserialize(state.state);
-        component.id = state.id;
-        runner.addComponent(component);
-    };
-
     const getClientState = (id: string): State => {
         const components =
             _(runner.components)
@@ -80,7 +71,7 @@ export default (options: ServerOptions) => {
 
     const processCommand = (command: Command) => {
         if (command.type === "spawn") {
-            spawn(command);
+            runner.restoreComponent(command.data);
         }
     };
 

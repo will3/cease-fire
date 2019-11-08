@@ -16,6 +16,8 @@ import {
     Scene,
     WebGLRenderer,
 } from "three";
+import guid from "uuid/v4";
+import componentFactory from "./componentFactory";
 import CameraController from "./components/CameraController";
 import Ship from "./components/Ship";
 import { Input } from "./core/Input";
@@ -59,24 +61,27 @@ clock.start();
 function animate() {
     runner.update();
     // renderer.render(scene, camera);
-    // composer.render();
+    composer.render();
     requestAnimationFrame(animate);
     input.clear();
 }
 
-const runner = new Runner(scene, input, clock);
+const runner = new Runner({scene, input, clock, componentFactory});
 
 const cameraController = new CameraController();
 cameraController.camera = camera;
 cameraController.distance = 200;
 runner.addComponent(cameraController);
 
+const playerId = guid();
+
 const ship = new Ship();
+ship.ownerId = playerId;
 runner.addComponent(ship);
 
 animate();
 
-const socket = SocketIOClient();
+const socket = SocketIOClient("http://localhost:3000");
 const client = createClient({
     runner,
     socket,

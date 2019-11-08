@@ -29,13 +29,15 @@ export default (options: ClientOptions) => {
         const state = getComponentState(component);
 
         sendCommand([{
-            type: component.type,
+            type: "spawn",
             data: state
         }]);
     }
 
     socket.on("state", (state: State) => {
-        console.log(state);
+        state.components.forEach((componentState) => {
+
+        });
     });
 
     return {

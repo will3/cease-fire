@@ -14,7 +14,7 @@ const io = SocketIO(httpServer);
 app.use(express.static("dist"));
 
 const scene = new Scene();
-const runner = new Runner(scene, undefined, undefined);
+const runner = new Runner({ scene, componentFactory });
 
 const dt = 1000 / 60;
 const server = createServer({

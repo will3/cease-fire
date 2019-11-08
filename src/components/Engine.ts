@@ -16,6 +16,7 @@ export default class Engine extends Component {
             texture.needsUpdate = true;
         };
 
+        const THREE = require("three");
         // @ts-ignore
         window.THREE = THREE;
         const SPE = require("shader-particle-engine");

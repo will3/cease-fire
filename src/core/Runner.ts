@@ -1,25 +1,42 @@
 import _ from "lodash";
 import { Clock, Scene } from "three";
 import Component from "./Component";
+import { ComponentFactory } from "./ComponentFactory";
+import ComponentState from "./ComponentState";
 import { Input } from "./Input";
+import { RunnerOptions } from "./RunnerOptions";
 
 export default class Runner {
-    private components: { [id: string]: Component } = {};
+    public components: { [id: string]: Component } = {};
     private scene: Scene;
     private input: Input;
     private clock: Clock;
+    private componentFactory: ComponentFactory;
 
-    constructor(
-        scene: Scene,
-        input?: Input,
-        clock?: Clock,
-    ) {
-        this.scene = scene;
-        this.input = input!;
-        this.clock = clock!;
+    constructor(options: RunnerOptions) {
+        this.scene = options.scene;
+        this.input = options.input!;
+        this.clock = options.clock!;
+        this.componentFactory = options.componentFactory!;
     }
 
-    public addComponent = (component: Component) => {
+    public restoreComponent(state: ComponentState) {
+        const id = state.id;
+        if (this.components[id] != null) {
+            // TODO update component
+            return;
+        }
+        console.log(`spawn ${JSON.stringify(state)}`);
+        const component = this.componentFactory.create(state.type);
+        this.injectDeps(component);
+        component.isServer = true;
+        component.deserialize(state.state);
+        component.id = state.id;
+        component.ownerId = state.ownerId;
+        this.addComponent(component);
+    }
+
+    public addComponent(component: Component) {
         this.components[component.id] = component;
         this.injectDeps(component);
     }
