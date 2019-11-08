@@ -36,7 +36,7 @@ export default (options: ClientOptions) => {
 
     socket.on("state", (state: State) => {
         state.components.forEach((componentState) => {
-
+            runner.restoreComponent(componentState);
         });
     });
 
