@@ -3,6 +3,7 @@ import guid from "uuid/v4";
 
 import { Input } from "./Input";
 import Runner from "./Runner";
+import { Time } from "./Time";
 
 export default class Component {
     public type!: string;
@@ -12,6 +13,7 @@ export default class Component {
     public input!: Input;
     public clock!: Clock;
     public runner!: Runner;
+    public time!: Time;
 
     public shouldDestroy = false;
     public started = false;

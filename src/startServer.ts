@@ -24,8 +24,9 @@ const server = createServer({
 });
 
 setInterval(() => {
-    server.update();
-    runner.update();
+    server.processCommands();
+    runner.update(dt / 1000);
+    server.emitClientStates();
 }, dt);
 
 httpServer.listen(3000, () => {

@@ -36,10 +36,6 @@ export default class Engine extends Component {
                 value: 0.15,
             },
             particleCount: 16,
-            size: {
-                spread: [0, 2.5],
-                value: [6, 0],
-            },
         });
 
         this.group.addEmitter(this.emitter);
@@ -52,7 +48,10 @@ export default class Engine extends Component {
             this.emitter.disable();
         } else {
             this.emitter.enable();
+            this.emitter.size.spread = [0, 2.5];
+            this.emitter.size.value = [6, 0];
         }
+
         this.emitter.position.value = this.parent.getWorldPosition(new Vector3());
         const quat = this.parent.getWorldQuaternion(new Quaternion());
         this.emitter.velocity.value =

@@ -1,22 +1,27 @@
 import _ from "lodash";
-import { Clock, Scene } from "three";
+import { Scene } from "three";
 import Component from "./Component";
 import { ComponentFactory } from "./ComponentFactory";
 import ComponentState from "./ComponentState";
 import { Input } from "./Input";
 import { RunnerOptions } from "./RunnerOptions";
 
+const defaultFrameRate = 60;
+
 export default class Runner {
     public components: { [id: string]: Component } = {};
     private scene: Scene;
     private input: Input;
-    private clock: Clock;
     private componentFactory: ComponentFactory;
+
+    private time = {
+        deltaTime: 1 / defaultFrameRate,
+        elaspedTime: 0,
+    };
 
     constructor(options: RunnerOptions) {
         this.scene = options.scene;
         this.input = options.input!;
-        this.clock = options.clock!;
         this.componentFactory = options.componentFactory!;
     }
 
@@ -46,10 +51,10 @@ export default class Runner {
         component.scene = this.scene;
         component.input = this.input;
         component.runner = this;
-        component.clock = this.clock;
+        component.time = this.time;
     }
 
-    public update() {
+    public update(dt: number) {
         _.forEach(this.components, (component) => {
             component.startIfNeeded();
         });
@@ -71,5 +76,8 @@ export default class Runner {
             component.onDestroy();
             delete this.components[component.id];
         }
+
+        this.time.deltaTime = dt;
+        this.time.elaspedTime += dt;
     }
 }

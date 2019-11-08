@@ -14,8 +14,6 @@ export default class ShipControl extends Component {
     public velocity = new Vector3();
     public rotationAcc = new Vector3(0, 0, 0.2);
     public acc = 0.06;
-    public fireAmount = 0;
-    public fireInterval = 0.1;
     public fireSpot = 0;
     public moveFriction = 0.9;
     public restFriction = 0.95;
@@ -59,25 +57,6 @@ export default class ShipControl extends Component {
 
         object.position.y = 0;
         object.rotation.x = 0;
-
-        // object.position.set(0, 0, 0);
-
-        if (fire) {
-            if (this.fireAmount > this.fireInterval) {
-                const laser = new Laser();
-                const rotation = new Euler(0, this.rotation.y + (Math.random() - 0.5) * 2.0 * 0.01, 0);
-                this.fireSpot %= 3;
-                const x = [-0.5, 0, 0.5];
-                const dir = new Vector3(x[this.fireSpot], 0, -1).applyEuler(rotation);
-                laser.object.rotation.copy(rotation);
-                laser.object.position.copy(object.position.clone().add(dir.multiplyScalar(2)));
-                this.addComponent(laser);
-                this.fireAmount = 0;
-                this.fireSpot += 1;
-            }
-        }
-
-        this.fireAmount += 1 / 60;
 
         this.leftEngine!.amount = forward;
         this.rightEngine!.amount = forward;

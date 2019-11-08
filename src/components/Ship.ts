@@ -1,14 +1,17 @@
 import { Object3D, Vector3 } from "three";
 
+import _ from "lodash";
 import Component from "../core/Component";
 import Engine from "./Engine";
 import ShipBody from "./ShipBody";
 import ShipControl from "./ShipControl";
+import Turrent from "./Turrent";
 
 export default class Ship extends Component {
     public type = "Ship";
     public isRemote = true;
     public ship!: ShipBody;
+    public turrents: Turrent[] = [];
 
     public start() {
         this.ship = new ShipBody();
@@ -21,6 +24,13 @@ export default class Ship extends Component {
         const offset = new Vector3(1.5, 1.5, 2.5);
         leftEngine.position.set(1, 0, 5).add(offset);
         rightEngine.position.set(9, 0, 5).add(offset);
+
+        this.turrents = [new Turrent()];
+
+        for (const turrent of this.turrents) {
+            this.addComponent(turrent);
+            turrent.parent = this.ship.object;
+        }
 
         if (!this.isServer) {
             const left = new Engine();

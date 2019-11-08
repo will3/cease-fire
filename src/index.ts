@@ -56,18 +56,15 @@ window.addEventListener("resize", () => {
 
 const input = new Input();
 
-const clock = new Clock();
-clock.start();
-
 function animate() {
-    runner.update();
+    runner.update(1 / 60);
     // renderer.render(scene, camera);
     composer.render();
     requestAnimationFrame(animate);
     input.clear();
 }
 
-const runner = new Runner({ scene, input, clock, componentFactory });
+const runner = new Runner({ scene, input, componentFactory });
 
 const cameraController = new CameraController();
 cameraController.camera = camera;

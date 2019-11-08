@@ -33,11 +33,7 @@ export default (options: ServerOptions) => {
         });
     });
 
-    const update = () => {
-        processCommands();
-
-        runner.update();
-
+    const emitClientStates = () => {
         _.forEach(connections, (connection, id) => {
             const clientState = getClientState(id);
             const socket = connection.socket;
@@ -74,6 +70,7 @@ export default (options: ServerOptions) => {
     };
 
     return {
-        update
+        processCommands,
+        emitClientStates,
     }
 };
