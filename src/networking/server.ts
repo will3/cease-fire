@@ -1,15 +1,14 @@
-import SocketIO from "socket.io";
-import { Command } from "./Client";
 import _ from "lodash";
-import Runner from "../core/Runner";
-import { State, getComponentState } from "./common";
+import SocketIO from "socket.io";
 import { ComponentFactory } from "../core/ComponentFactory";
 import ComponentState from "../core/ComponentState";
-import util from "util";
+import Runner from "../core/Runner";
+import { Command } from "./Client";
+import { getComponentState, State } from "./common";
 
 interface Connection {
     socket: SocketIO.Socket
-};
+}
 
 export interface ServerOptions {
     io: SocketIO.Server;
@@ -39,13 +38,12 @@ export default (options: ServerOptions) => {
 
         runner.update();
 
-        for (let id in connections) {
-            const connection = connections[id];
+        _.forEach(connections, (connection, id) => {
             const clientState = getClientState(id);
             const socket = connection.socket;
 
             socket.emit("state", clientState);
-        }
+        });
     };
 
     const getClientState = (id: string): State => {

@@ -19,6 +19,7 @@ export default class ShipControl extends Component {
     public fireSpot = 0;
     public moveFriction = 0.9;
     public restFriction = 0.95;
+    public maxSpeed = 0.2;
 
     public update() {
         const left = this.input.key("a") ? 1.0 : 0.0 - (this.input.key("d") ? 1.0 : 0.0);
@@ -42,11 +43,14 @@ export default class ShipControl extends Component {
         const friction = forward > 0 ? this.moveFriction : this.restFriction;
         this.velocity.multiplyScalar(friction);
 
+        if (this.velocity.length() > this.maxSpeed) {
+            this.velocity.setLength(this.maxSpeed);
+        }
+
         this.rotationVelocity.z += rollAcc;
         this.rotation.z += this.rotationVelocity.z;
 
-        const maxSpeed = this.acc / (1 - friction);
-        const speedRatio = this.velocity.length() / maxSpeed;
+        const speedRatio = this.velocity.length() / this.maxSpeed;
         this.rotation.y += Math.sin(this.rotation.z) * 0.1 * speedRatio;
 
         const object = this.shipBody!.object;
