@@ -41,12 +41,14 @@ export default class Ship extends Component {
             right.parent = rightEngine;
             this.addComponent(right);
 
-            const shipControl = new ShipControl();
-            shipControl.shipBody = this.body;
-            shipControl.leftEngine = left;
-            shipControl.rightEngine = right;
-            shipControl.turrents = this.turrents;
-            this.addComponent(shipControl);
+            if (this.isOwn) {
+                const shipControl = new ShipControl();
+                shipControl.shipBody = this.body;
+                shipControl.leftEngine = left;
+                shipControl.rightEngine = right;
+                shipControl.turrents = this.turrents;
+                this.addComponent(shipControl);
+            }
         }
     }
 

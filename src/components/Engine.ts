@@ -5,7 +5,7 @@ export default class Engine extends Component {
     public group: any;
     public object?: Object3D;
     public emitter: any;
-    public amount = 1.0;
+    public amount = 0.0;
 
     public start() {
         // TODO use shared image

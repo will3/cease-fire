@@ -96,3 +96,6 @@ const client = createClient({
 
 client.join(playerId);
 client.spawn(ship);
+
+const enemyShip = new Ship();
+runner.addComponent(enemyShip);
