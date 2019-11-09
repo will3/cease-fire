@@ -15,7 +15,7 @@ export default class Ship extends Component {
 
     public start() {
         this.body = new ShipBody();
-        this.addComponent(this.body);
+        this.addComponent(this.body, true);
 
         const leftEngine = new Object3D();
         const rightEngine = new Object3D();
@@ -28,18 +28,18 @@ export default class Ship extends Component {
         this.turrents = [new Turrent()];
 
         for (const turrent of this.turrents) {
-            this.addComponent(turrent);
+            this.addComponent(turrent, true);
             turrent.parent = this.body.object;
         }
 
         if (!this.isServer) {
             const left = new Engine();
             left.parent = leftEngine;
-            this.addComponent(left);
+            this.addComponent(left, true);
 
             const right = new Engine();
             right.parent = rightEngine;
-            this.addComponent(right);
+            this.addComponent(right, true);
 
             if (this.isOwn) {
                 const shipControl = new ShipControl();
@@ -47,7 +47,7 @@ export default class Ship extends Component {
                 shipControl.leftEngine = left;
                 shipControl.rightEngine = right;
                 shipControl.turrents = this.turrents;
-                this.addComponent(shipControl);
+                this.addComponent(shipControl, true);
             }
         }
     }

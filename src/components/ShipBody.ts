@@ -4,6 +4,7 @@ import Component from "../core/Component";
 import { getMaterial } from "../materials";
 import Chunk from "../voxel/Chunk";
 import { Mesher } from "../voxel/Mesher";
+import Explosion from "./Explosion";
 
 export default class ShipBody extends Component {
     public object = new Object3D();
@@ -61,6 +62,11 @@ export default class ShipBody extends Component {
     public damage(coord: Vector3) {
         this.chunk.set(coord.x, coord.y, coord.z, 0);
         this.dirty = true;
+
+        const explosion = new Explosion();
+        this.addComponent(explosion);
+        const position = this.mesh.localToWorld(coord.clone().add(new Vector3(0.5, 0.5, 0.5)));
+        explosion.object.position.copy(position);
     }
 
     private calcCenter() {

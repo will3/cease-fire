@@ -1,4 +1,4 @@
-import { Clock, Object3D, Scene } from "three";
+import { Clock, Object3D, Scene, Camera } from "three";
 import guid from "uuid/v4";
 
 import _ from "lodash";
@@ -15,6 +15,7 @@ export default class Component {
     public clock!: Clock;
     public runner!: Runner;
     public time!: Time;
+    public camera!: Camera;
 
     public shouldDestroy = false;
     public started = false;
@@ -57,9 +58,11 @@ export default class Component {
                 c.destroy());
     }
 
-    public addComponent(component: Component) {
+    public addComponent(component: Component, isChild: boolean = false) {
         this.runner.addComponent(component);
-        this.children.push(component);
+        if (isChild) {
+            this.children.push(component);
+        }
     }
 
     public findComponents(type: string) {

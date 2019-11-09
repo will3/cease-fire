@@ -1,4 +1,4 @@
-import { Clock, Scene } from "three";
+import { Camera, Clock, Scene } from "three";
 import ComponentFactory from "./ComponentFactory";
 import { Input } from "./Input";
 
@@ -7,4 +7,5 @@ export interface RunnerOptions {
     input?: Input;
     clock?: Clock;
     componentFactory?: ComponentFactory;
+    camera?: Camera;
 }

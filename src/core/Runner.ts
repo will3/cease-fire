@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Scene } from "three";
+import { Scene, Camera } from "three";
 import Component from "./Component";
 import ComponentFactory from "./ComponentFactory";
 import ComponentState from "./ComponentState";
@@ -11,8 +11,9 @@ const defaultFrameRate = 60;
 export default class Runner {
     public components: { [id: string]: Component } = {};
     private scene: Scene;
-    private input: Input;
     private componentFactory: ComponentFactory;
+    private input: Input;
+    private camera: Camera;
 
     private time = {
         deltaTime: 1 / defaultFrameRate,
@@ -23,6 +24,7 @@ export default class Runner {
         this.scene = options.scene;
         this.input = options.input!;
         this.componentFactory = options.componentFactory!;
+        this.camera = options.camera!;
     }
 
     public restoreComponent(state: ComponentState) {
@@ -58,9 +60,10 @@ export default class Runner {
     public injectDeps(component: Component) {
         component.parent = component.parent || this.scene;
         component.scene = this.scene;
-        component.input = this.input;
         component.runner = this;
         component.time = this.time;
+        component.input = this.input;
+        component.camera = this.camera;
     }
 
     public update(dt: number) {

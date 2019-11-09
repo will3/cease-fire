@@ -4,6 +4,7 @@ import Engine from "./Engine";
 import Laser from "./Laser";
 import ShipBody from "./ShipBody";
 import Turrent from "./Turrent";
+import { clamp } from "../math";
 
 export default class ShipControl extends Component {
     public shipBody?: ShipBody;
@@ -69,13 +70,3 @@ export default class ShipControl extends Component {
         }
     }
 }
-
-const clamp = (v: number, min: number, max: number) => {
-    if (v < min) {
-        return min;
-    }
-    if (v > max) {
-        return max;
-    }
-    return v;
-};

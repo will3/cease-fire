@@ -63,7 +63,7 @@ function animate() {
     input.clear();
 }
 
-const runner = new Runner({ scene, input, componentFactory });
+const runner = new Runner({ scene, input, componentFactory, camera });
 
 const cameraController = new CameraController();
 cameraController.camera = camera;
