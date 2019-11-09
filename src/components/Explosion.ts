@@ -6,10 +6,11 @@ import ValueCurve from "../ValueCurve";
 export default class Explosion extends Component {
     public object = new Object3D();
     public plane = new Mesh();
-    public timeToLive = 0.5;
-    public scaleCurve = new ValueCurve([0, 1, 1, 0.8], [0, 0.2, 0.4, 1]);
-    public opacityCurve = new ValueCurve([0, 1.0, 1.0, 0.5], [0, 0.2, 0.4, 1]);
+    public timeToLive = 0.3;
+    public scaleCurve = new ValueCurve([0, 1, 1, 0.8], [0, 0.2, 0.3, 1]);
+    public opacityCurve = new ValueCurve([0, 1.0, 1.0, 0.2], [0, 0.2, 0.3, 1]);
     public scale = 5.0;
+    public wait = 0;
 
     private life = 0;
     private material = new MeshBasicMaterial({
@@ -25,11 +26,18 @@ export default class Explosion extends Component {
         this.parent.add(this.object);
         this.object.add(this.plane);
         this.plane.rotation.z = Math.random() * Math.PI * 2;
+
+        this.object.position.add(this.camera.position.clone().sub(this.object.position).normalize().multiplyScalar(1));
     }
 
     public update() {
         this.life += this.time.deltaTime;
-        const r = clamp(this.life / this.timeToLive, 0, 1);
+
+        if (this.life < this.wait) {
+            return;
+        }
+
+        const r = clamp((this.life - this.wait) / this.timeToLive, 0, 1);
         const scale = this.scaleCurve.get(r) * this.scale;
         this.object.scale.set(scale, scale, scale);
 

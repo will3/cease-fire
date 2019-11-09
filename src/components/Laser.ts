@@ -7,37 +7,41 @@ import Ship from "./Ship";
 import ShipBody from "./ShipBody";
 
 export default class Laser extends Component {
-    public material?: SpriteMaterial;
+    private static material: SpriteMaterial;
     public object = new Object3D();
     public velocity = 6;
     public scale: number[] = [2.0, 1, 0.8, 0.4];
     public offset: number[] = [0, 1.2, 2.4, 3.6];
-
-    private velocityScale = 1.0;
+    public baseScale = 1.5;
+    public timeToLive = 3;
+    private life = 0;
     private sprites: Object3D[] = [];
 
     public start() {
-        this.material = getMaterial("laser", () => new SpriteMaterial({
-            color: 0xffffff,
-        })) as SpriteMaterial;
+        if (Laser.material == null) {
+            Laser.material = getMaterial("laser", () => new SpriteMaterial({
+                color: 0xffffff,
+            })) as SpriteMaterial;
+        }
 
         const length = this.scale.length;
 
         this.sprites = [];
         for (let i = 0; i < length; i++) {
-            const s = new Sprite(this.material);
+            const s = new Sprite(Laser.material);
             s.scale.set(this.scale[i], this.scale[i], this.scale[i]);
             s.position.set(0, 0, this.offset[i]);
             this.sprites.push(s);
             this.object.add(s);
         }
 
-        this.object.scale.multiplyScalar(1.5);
+        this.object.scale.multiplyScalar(this.baseScale);
         this.parent.add(this.object);
     }
 
     public update() {
-        if (this.velocityScale < 0.1) {
+        this.life += this.time.deltaTime;
+        if (this.life > this.timeToLive) {
             this.destroy();
             return;
         }
@@ -48,10 +52,7 @@ export default class Laser extends Component {
         }
 
         const forwardVector = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
-        this.velocityScale *= 0.97;
-        this.object.position.add(forwardVector.multiplyScalar(this.velocity * this.velocityScale));
-        const scale = 1.5 * Math.pow(this.velocityScale, 0.4);
-        this.object.scale.set(scale, scale, scale);
+        this.object.position.add(forwardVector.multiplyScalar(this.velocity));
     }
 
     public onDestroy() {
@@ -63,7 +64,15 @@ export default class Laser extends Component {
 
         const objects = _(ships).map((s) => s.body.mesh).filter((m) => m != null).value() as Mesh[];
         const dir = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
-        const raycaster = new Raycaster(this.object.position, dir, 0, this.velocity);
+        const up = new Vector3(0, 1, 0);
+        const right = dir.clone().cross(up);
+        return this.raycast(dir, objects, new Vector3()) ||
+            this.raycast(dir, objects, right.clone().multiplyScalar(0.5)) ||
+            this.raycast(dir, objects, right.clone().multiplyScalar(-0.5));
+    }
+
+    private raycast(dir: Vector3, objects: Mesh[], offset: Vector3) {
+        const raycaster = new Raycaster(this.object.position.clone().add(offset), dir, 0, this.velocity);
         if (objects.length === 0) {
             return false;
         }
@@ -78,7 +87,6 @@ export default class Laser extends Component {
         const coord = body.getCoord(result.faceIndex!);
 
         body.damage(coord, 1);
-
         return true;
     }
 }

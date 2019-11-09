@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Color, FaceColors, Material, Mesh, MeshBasicMaterial, Object3D, Vector3, VertexColors } from "three";
+import { Color, FaceColors, Material, Mesh, MeshBasicMaterial, Object3D, Vector3, VertexColors, MaterialIdCount } from "three";
 import Component from "../core/Component";
 import { getMaterial } from "../materials";
 import { clamp } from "../math";
@@ -62,8 +62,9 @@ export default class ShipBody extends Component {
     }
 
     public damage(coord: Vector3, amount: number) {
-        const pattern = spherePattern(1.5, new ValueCurve([1, 0], [0, 1]));
+        const pattern = spherePattern(2.5, new ValueCurve([1, 0], [0, 1]));
 
+        let index = 0;
         for (const p of pattern) {
             const dc = new Vector3(p[0], p[1], p[2]).add(coord);
             if (this.chunk.inBound(dc.x, dc.y, dc.z)) {
@@ -73,16 +74,21 @@ export default class ShipBody extends Component {
                 }
                 v -= p[3];
                 v = clamp(v, 0, 1);
-                this.chunk.set(dc.x, dc.y, dc.z, v);
+                // this.chunk.set(dc.x, dc.y, dc.z, v);
+
+                if (v === 0) {
+                    const explosion = new Explosion();
+                    explosion.scale = 4 + Math.random() * 4;
+                    this.addComponent(explosion);
+                    const position = this.mesh.localToWorld(dc.clone().add(new Vector3(0.5, 0.5, 0.5)));
+                    explosion.object.position.copy(position);
+                    explosion.wait = 0.05 * index;
+                    index++;
+                }
             }
         }
 
         this.dirty = true;
-
-        const explosion = new Explosion();
-        this.addComponent(explosion);
-        const position = this.mesh.localToWorld(coord.clone().add(new Vector3(0.5, 0.5, 0.5)));
-        explosion.object.position.copy(position);
     }
 
     private calcCenter() {
