@@ -1,10 +1,12 @@
 import _ from "lodash";
-import { Color, Material, Mesh, MeshBasicMaterial, Object3D, Vector3, VertexColors, FaceColors } from "three";
+import { Color, FaceColors, Material, Mesh, MeshBasicMaterial, Object3D, Vector3, VertexColors } from "three";
 import Component from "../core/Component";
 import { getMaterial } from "../materials";
+import { clamp } from "../math";
 import Chunk from "../voxel/Chunk";
 import { Mesher } from "../voxel/Mesher";
 import Explosion from "./Explosion";
+import ValueCurve from "../ValueCurve";
 
 export default class ShipBody extends Component {
     public object = new Object3D();
@@ -59,8 +61,22 @@ export default class ShipBody extends Component {
         this.parent.remove(this.object);
     }
 
-    public damage(coord: Vector3) {
-        this.chunk.set(coord.x, coord.y, coord.z, 0);
+    public damage(coord: Vector3, amount: number) {
+        const pattern = spherePattern(1.5, new ValueCurve([1, 0], [0, 1]));
+
+        for (const p of pattern) {
+            const dc = new Vector3(p[0], p[1], p[2]).add(coord);
+            if (this.chunk.inBound(dc.x, dc.y, dc.z)) {
+                let v = this.chunk.get(dc.x, dc.y, dc.z);
+                if (v <= 0) {
+                    continue;
+                }
+                v -= p[3];
+                v = clamp(v, 0, 1);
+                this.chunk.set(dc.x, dc.y, dc.z, v);
+            }
+        }
+
         this.dirty = true;
 
         const explosion = new Explosion();
@@ -92,6 +108,26 @@ export default class ShipBody extends Component {
             .multiplyScalar(-1);
     }
 }
+
+const spherePattern = (radius: number, valueCurve: ValueCurve) => {
+    const r = Math.ceil(radius);
+    const list = [];
+    for (let i = -r; i <= r; i++) {
+        for (let j = -r; j <= r; j++) {
+            for (let k = -r; k <= r; k++) {
+                const dist = Math.sqrt(i * i + j * j + k * k);
+                if (dist > radius) {
+                    continue;
+                }
+                const it = dist / radius;
+                const v = valueCurve.get(it);
+                list.push([i, j, k, v]);
+            }
+        }
+    }
+
+    return list;
+};
 
 const buildShip = (chunk: Chunk, color: Color) => {
     const voxels: number[][] = [];

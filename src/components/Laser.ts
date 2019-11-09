@@ -54,6 +54,10 @@ export default class Laser extends Component {
         this.object.scale.set(scale, scale, scale);
     }
 
+    public onDestroy() {
+        this.parent.remove(this.object);
+    }
+
     private updateCollision() {
         const ships = this.findComponents("Ship") as Ship[];
 
@@ -73,12 +77,8 @@ export default class Laser extends Component {
         const body = this.getComponent(compoenntId) as ShipBody;
         const coord = body.getCoord(result.faceIndex!);
 
-        body.damage(coord);
+        body.damage(coord, 1);
 
         return true;
-    }
-
-    public onDestroy() {
-        this.parent.remove(this.object);
     }
 }
