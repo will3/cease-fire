@@ -2,7 +2,7 @@ import { Object3D, Vector3 } from "three";
 
 import _ from "lodash";
 import Component from "../core/Component";
-import Engine from "./Engine";
+import EngineParticles from "./EngineParticles";
 import ShipBody from "./ShipBody";
 import ShipControl from "./ShipControl";
 import Turrent from "./Turrent";
@@ -11,7 +11,6 @@ export default class Ship extends Component {
     public type = "Ship";
     public isRemote = true;
     public body!: ShipBody;
-    public turrents: Turrent[] = [];
 
     public start() {
         this.body = new ShipBody();
@@ -25,19 +24,16 @@ export default class Ship extends Component {
         leftEngine.position.set(1, 0, 5).add(offset);
         rightEngine.position.set(9, 0, 5).add(offset);
 
-        this.turrents = [new Turrent()];
-
-        for (const turrent of this.turrents) {
-            this.addComponent(turrent, true);
-            turrent.parent = this.body.object;
-        }
+        const turrent = new Turrent();
+        this.addComponent(turrent, true);
+        turrent.parent = this.body.object;
 
         if (!this.isServer) {
-            const left = new Engine();
+            const left = new EngineParticles();
             left.parent = leftEngine;
             this.addComponent(left, true);
 
-            const right = new Engine();
+            const right = new EngineParticles();
             right.parent = rightEngine;
             this.addComponent(right, true);
 
@@ -46,7 +42,7 @@ export default class Ship extends Component {
                 shipControl.shipBody = this.body;
                 shipControl.leftEngine = left;
                 shipControl.rightEngine = right;
-                shipControl.turrents = this.turrents;
+                shipControl.turrent = turrent;
                 this.addComponent(shipControl, true);
             }
         }

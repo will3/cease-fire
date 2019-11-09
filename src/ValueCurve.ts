@@ -5,22 +5,25 @@ export default class ValueCurve {
         this.values = values;
         this.intervals = intervals;
     }
-    public get(interval: number) {
-        if (interval <= 0) {
+    public get(t: number) {
+        if (t <= 0) {
             return this.values[0];
         }
-        if (interval >= 1.0) {
+        if (t >= 1.0) {
             return this.values[this.values.length - 1];
         }
-        for (let i = 0; i < this.intervals.length; i++) {
-            const it = this.intervals[i];
-            if (it > interval) {
-                const a = this.values[i];
-                const b = this.values[i + 1];
-                const r = (interval - it) / (this.intervals[i + 1] - it);
-                return a * (1 - r) + (b * r);
+
+        for (let i = 0; i < this.intervals.length - 1; i++) {
+            const t1 = this.intervals[i];
+            const t2 = this.intervals[i + 1];
+            if (t >= t1 && t < t2) {
+                const v1 = this.values[i];
+                const v2 = this.values[i + 1];
+                const r = (t - t1) / (t2 - t1);
+                return v1 * (1 - r) + (v2 * r);
             }
         }
+
         throw new Error("Should never happen");
     }
 }

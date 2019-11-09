@@ -1,25 +1,25 @@
-import { Euler, Vector3 } from "three";
+import { Vector3 } from "three";
 import Component from "../core/Component";
-import Engine from "./Engine";
-import Laser from "./Laser";
+import { clamp } from "../math";
+import EngineParticles from "./EngineParticles";
 import ShipBody from "./ShipBody";
 import Turrent from "./Turrent";
-import { clamp } from "../math";
 
 export default class ShipControl extends Component {
     public shipBody?: ShipBody;
-    public leftEngine?: Engine;
-    public rightEngine?: Engine;
+
+    public leftEngine?: EngineParticles;
+    public rightEngine?: EngineParticles;
+
     public maxRoll = Math.PI / 5;
     public rotationVelocity = new Vector3();
     public velocity = new Vector3();
     public rotationAcc = new Vector3(0, 0, 0.2);
     public acc = 0.06;
-    public fireSpot = 0;
     public moveFriction = 0.9;
     public restFriction = 0.95;
     public maxSpeed = 0.2;
-    public turrents: Turrent[] = [];
+    public turrent?: Turrent;
 
     public update() {
         const left = this.input.key("a") ? 1.0 : 0.0 - (this.input.key("d") ? 1.0 : 0.0);
@@ -65,8 +65,8 @@ export default class ShipControl extends Component {
         this.leftEngine!.amount = forward;
         this.rightEngine!.amount = forward;
 
-        for (const turrent of this.turrents) {
-            turrent.fire = fire;
+        if (this.turrent != null) {
+            this.turrent.fire = fire;
         }
     }
 }

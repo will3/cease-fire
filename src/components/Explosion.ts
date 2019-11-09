@@ -4,23 +4,22 @@ import { clamp } from "../math";
 import ValueCurve from "../ValueCurve";
 
 export default class Explosion extends Component {
-    private static material: MeshBasicMaterial;
     public object = new Object3D();
     public plane = new Mesh();
-    public timeToLive = 0.2;
-    public scaleCurve = new ValueCurve([0, 1, 0], [0, 0.2, 1]);
+    public timeToLive = 0.5;
+    public scaleCurve = new ValueCurve([0, 1, 1, 0.8], [0, 0.2, 0.4, 1]);
+    public opacityCurve = new ValueCurve([0, 1.0, 1.0, 0.5], [0, 0.2, 0.4, 1]);
     public scale = 5.0;
 
     private life = 0;
+    private material = new MeshBasicMaterial({
+        color: new Color(1.0, 1.0, 1.0),
+        transparent: true,
+    });
 
     public start() {
-        if (Explosion.material == null) {
-            Explosion.material = new MeshBasicMaterial({
-                color: new Color(1.0, 1.0, 1.0),
-            });
-        }
         this.plane.geometry = new PlaneGeometry();
-        this.plane.material = Explosion.material;
+        this.plane.material = this.material;
         this.object.up = new Vector3(0, 1, 0);
         this.object.lookAt(this.camera.position);
         this.parent.add(this.object);
@@ -34,6 +33,8 @@ export default class Explosion extends Component {
         const scale = this.scaleCurve.get(r) * this.scale;
         this.object.scale.set(scale, scale, scale);
 
+        this.material.opacity = this.opacityCurve.get(r);
+
         if (r >= 1) {
             this.destroy();
         }
@@ -41,5 +42,6 @@ export default class Explosion extends Component {
 
     public onDestroy() {
         this.parent.remove(this.object);
+        this.material.dispose();
     }
 }
