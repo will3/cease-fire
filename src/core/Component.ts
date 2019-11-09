@@ -61,4 +61,12 @@ export default class Component {
         this.runner.addComponent(component);
         this.children.push(component);
     }
+
+    public findComponents(type: string) {
+        return this.runner.findComponents(type);
+    }
+
+    public getComponent(id: string) {
+        return this.runner.getComponent(id);
+    }
 }

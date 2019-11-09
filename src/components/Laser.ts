@@ -1,7 +1,10 @@
-import { Object3D, Sprite, SpriteMaterial, Vector3 } from "three";
+import { Object3D, Sprite, SpriteMaterial, Vector3, Raycaster, Mesh } from "three";
 
+import _ from "lodash";
 import Component from "../core/Component";
 import { getMaterial } from "../materials";
+import Ship from "./Ship";
+import ShipBody from "./ShipBody";
 
 export default class Laser extends Component {
     public material?: SpriteMaterial;
@@ -34,15 +37,45 @@ export default class Laser extends Component {
     }
 
     public update() {
+        if (this.velocityScale < 0.1) {
+            this.destroy();
+            return;
+        }
+
+        if (this.updateCollision()) {
+            this.destroy();
+            return;
+        }
+
         const forwardVector = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
         this.velocityScale *= 0.97;
         this.object.position.add(forwardVector.multiplyScalar(this.velocity * this.velocityScale));
         const scale = 1.5 * Math.pow(this.velocityScale, 0.4);
         this.object.scale.set(scale, scale, scale);
+    }
 
-        if (this.velocityScale < 0.1) {
-            this.destroy();
+    private updateCollision() {
+        const ships = this.findComponents("Ship") as Ship[];
+
+        const objects = _(ships).map((s) => s.body.mesh).filter((m) => m != null).value() as Mesh[];
+        const dir = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
+        const raycaster = new Raycaster(this.object.position, dir, 0, this.velocity);
+        if (objects.length === 0) {
+            return false;
         }
+        const results = raycaster.intersectObjects(objects);
+        if (results.length === 0) {
+            return false;
+        }
+        const result = results[0];
+
+        const compoenntId = result.object.userData.componentId;
+        const body = this.getComponent(compoenntId) as ShipBody;
+        const coord = body.getCoord(result.faceIndex!);
+
+        body.damage(coord);
+
+        return true;
     }
 
     public onDestroy() {

@@ -42,9 +42,17 @@ export default class Runner {
         this.addComponent(component);
     }
 
+    public findComponents(type: string) {
+        return _(this.components).filter((c) => c.type === type).value();
+    }
+
     public addComponent(component: Component) {
         this.components[component.id] = component;
         this.injectDeps(component);
+    }
+
+    public getComponent(id: string) {
+        return this.components[id];
     }
 
     public injectDeps(component: Component) {

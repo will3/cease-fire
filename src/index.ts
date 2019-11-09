@@ -99,3 +99,5 @@ client.spawn(ship);
 
 const enemyShip = new Ship();
 runner.addComponent(enemyShip);
+enemyShip.startIfNeeded();
+enemyShip.body.object.position.x = 10;
