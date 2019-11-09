@@ -1,7 +1,6 @@
 import _ from "lodash";
 import SocketIO from "socket.io";
-import { ComponentFactory } from "../core/ComponentFactory";
-import ComponentState from "../core/ComponentState";
+import ComponentFactory from "../core/ComponentFactory";
 import Runner from "../core/Runner";
 import { Command } from "./Client";
 import { getComponentState, State } from "./common";

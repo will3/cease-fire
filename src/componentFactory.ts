@@ -1,5 +1,5 @@
 import Ship from "./components/Ship";
-import { ComponentFactory } from "./core/ComponentFactory";
+import ComponentFactory from "./core/ComponentFactory";
 
 const componentFactory = {
     create(type: string) {

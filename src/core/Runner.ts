@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { Scene } from "three";
 import Component from "./Component";
-import { ComponentFactory } from "./ComponentFactory";
+import ComponentFactory from "./ComponentFactory";
 import ComponentState from "./ComponentState";
 import { Input } from "./Input";
 import { RunnerOptions } from "./RunnerOptions";

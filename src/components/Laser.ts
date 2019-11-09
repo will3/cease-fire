@@ -7,24 +7,29 @@ export default class Laser extends Component {
     public material?: SpriteMaterial;
     public object = new Object3D();
     public velocity = 6;
+    public scale: number[] = [2.0, 1, 0.8, 0.4];
+    public offset: number[] = [0, 1.2, 2.4, 3.6];
 
-    private a?: Object3D;
-    private b?: Object3D;
-    private c?: Object3D;
     private velocityScale = 1.0;
+    private sprites: Object3D[] = [];
 
     public start() {
         this.material = getMaterial("laser", () => new SpriteMaterial({
             color: 0xffffff,
         })) as SpriteMaterial;
-        this.a = new Sprite(this.material);
-        this.b = new Sprite(this.material);
-        this.c = new Sprite(this.material);
-        this.a.scale.set(2.0, 2.0, 2.0);
-        this.b.scale.set(1.4, 1.4, 1.4);
-        this.c.scale.set(0.8, 0.8, 0.8);
+
+        const length = this.scale.length;
+
+        this.sprites = [];
+        for (let i = 0; i < length; i++) {
+            const s = new Sprite(this.material);
+            s.scale.set(this.scale[i], this.scale[i], this.scale[i]);
+            s.position.set(0, 0, this.offset[i]);
+            this.sprites.push(s);
+            this.object.add(s);
+        }
+
         this.object.scale.multiplyScalar(1.5);
-        this.object.add(this.a, this.b, this.c);
         this.parent.add(this.object);
     }
 
@@ -34,8 +39,6 @@ export default class Laser extends Component {
         this.object.position.add(forwardVector.multiplyScalar(this.velocity * this.velocityScale));
         const scale = 1.5 * Math.pow(this.velocityScale, 0.4);
         this.object.scale.set(scale, scale, scale);
-        this.b!.position.set(0, 0, 1.2 * this.velocityScale);
-        this.c!.position.set(0, 0, 2.4 * this.velocityScale);
 
         if (this.velocityScale < 0.1) {
             this.destroy();

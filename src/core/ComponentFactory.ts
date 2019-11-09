@@ -1,4 +1,4 @@
 import Component from "./Component";
-export interface ComponentFactory {
+export default interface ComponentFactory {
     create: (id: string) => Component;
 }

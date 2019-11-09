@@ -9,7 +9,6 @@ import {
 import SocketIOClient from "socket.io-client";
 import {
     AmbientLight,
-    Clock,
     Color,
     DirectionalLight,
     PerspectiveCamera,
