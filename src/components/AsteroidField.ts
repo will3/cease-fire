@@ -22,9 +22,12 @@ export default class AsteroidField extends Component {
                 if (v > 0) {
                     const asteroid = new Asteroid();
                     asteroid.gridCoord = new Vector2(i, j);
+                    const offset = randomAxis()
+                        .setY(0)
+                        .multiplyScalar(this.gridSize / 2);
                     asteroid.object.position
                         .set(i * this.gridSize, 0, j * this.gridSize)
-                        .add(randomAxis().multiplyScalar(this.gridSize / 2));
+                        .add(offset);
                     const scale = 2 + clamp(Math.pow(v, 1) * 20, 0, 6);
                     asteroid.object.scale.set(scale, scale, scale);
 

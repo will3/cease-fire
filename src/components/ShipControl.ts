@@ -22,7 +22,7 @@ export default class ShipControl extends Component {
             forward = 0;
         }
         if (forward === 0 && left !== 0) {
-            forward = 1.0;
+            forward = 0.5;
         }
 
         this.leftEngine.amount = forward;

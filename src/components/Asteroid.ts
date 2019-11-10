@@ -1,15 +1,31 @@
-import { Color, DodecahedronGeometry, Material, Mesh, MeshLambertMaterial, Object3D, Quaternion, Vector2 } from "three";
+import {
+    Color,
+    DodecahedronGeometry,
+    Intersection,
+    Material,
+    Mesh,
+    MeshLambertMaterial,
+    Object3D,
+    Quaternion,
+    Vector2,
+} from "three";
 import Component from "../core/Component";
 import { randomAxis, randomQuaternion } from "../math";
 import Noise from "../Noise";
+import Explosion from "./Explosion";
 
-export default class Asteroid extends Component {
+export interface Hitable {
+    onHit: (result: Intersection) => void;
+}
+
+export default class Asteroid extends Component implements Hitable {
     private static material: Material;
 
+    public type = "Asteroid";
     public object = new Object3D();
     public gridCoord = new Vector2();
+    public mesh = new Mesh();
 
-    private mesh = new Mesh();
     private quatVelocity = new Quaternion();
     private noise = new Noise({
         frequency: 0.5,
@@ -18,6 +34,7 @@ export default class Asteroid extends Component {
 
     public start() {
         this.parent.add(this.object);
+        this.mesh.userData.componentId = this.id;
 
         if (Asteroid.material == null) {
             Asteroid.material = new MeshLambertMaterial({
@@ -54,5 +71,12 @@ export default class Asteroid extends Component {
 
     get radius() {
         return Math.max(this.object.scale.x, this.object.scale.y, this.object.scale.z);
+    }
+
+    public onHit(result: Intersection) {
+        const explosion = new Explosion();
+        // const position = this.mesh.localToWorld(result.point);
+        explosion.object.position.copy(result.point);
+        this.addComponent(explosion);
     }
 }

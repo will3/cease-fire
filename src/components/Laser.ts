@@ -5,6 +5,7 @@ import Component from "../core/Component";
 import { getMaterial } from "../materials";
 import Ship from "./Ship";
 import ShipBody from "./ShipBody";
+import Asteroid from "./Asteroid";
 
 export default class Laser extends Component {
     private static material: SpriteMaterial;
@@ -60,33 +61,57 @@ export default class Laser extends Component {
     }
 
     private updateCollision() {
+        return this.updateCollisionShip() || this.updateCollisionAsteroid();
+    }
+
+    private updateCollisionShip() {
         const ships = this.findComponents("Ship") as Ship[];
 
         const objects = _(ships).map((s) => s.body.mesh).filter((m) => m != null).value() as Mesh[];
         const dir = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
         const up = new Vector3(0, 1, 0);
         const right = dir.clone().cross(up);
-        return this.raycast(dir, objects, new Vector3()) ||
+        const result = this.raycast(dir, objects, new Vector3()) ||
             this.raycast(dir, objects, right.clone().multiplyScalar(0.5)) ||
             this.raycast(dir, objects, right.clone().multiplyScalar(-0.5));
+
+        if (result != null) {
+            const compoenntId = result.object.userData.componentId;
+            const body = this.getComponent(compoenntId) as ShipBody;
+            const coord = body.getCoord(result.faceIndex!);
+
+            body.damage(coord, 1);
+        }
+
+        return result != null;
     }
 
-    private raycast(dir: Vector3, objects: Mesh[], offset: Vector3) {
+    private raycast(dir: Vector3, objects: Object3D[], offset = new Vector3()) {
         const raycaster = new Raycaster(this.object.position.clone().add(offset), dir, 0, this.velocity);
         if (objects.length === 0) {
-            return false;
+            return undefined;
         }
         const results = raycaster.intersectObjects(objects);
         if (results.length === 0) {
-            return false;
+            return undefined;
         }
-        const result = results[0];
 
-        const compoenntId = result.object.userData.componentId;
-        const body = this.getComponent(compoenntId) as ShipBody;
-        const coord = body.getCoord(result.faceIndex!);
+        return results[0];
+    }
 
-        body.damage(coord, 1);
-        return true;
+    private updateCollisionAsteroid() {
+        const asteroids = this.findComponents("Asteroid") as Asteroid[];
+
+        const objects = _(asteroids).map((s) => s.mesh).value() as Object3D[];
+        const dir = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
+        const result = this.raycast(dir, objects);
+
+        if (result != null) {
+            const componentId = result.object.userData.componentId;
+            const asteroid = this.getComponent(componentId) as Asteroid;
+            asteroid.onHit(result);
+        }
+
+        return result != null;
     }
 }
