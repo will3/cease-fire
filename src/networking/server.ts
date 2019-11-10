@@ -13,24 +13,24 @@ interface Connection {
 export interface ServerOptions {
     io: SocketIO.Server;
     runner: Runner;
-    componentFactory: ComponentFactory
-};
+    componentFactory: ComponentFactory;
+}
 
 export default (options: ServerOptions) => {
     const connections: { [id: string]: Connection } = {};
     const commandBuffer: Command[] = [];
     const { io, runner, componentFactory } = options;
 
-    io.on("connection", socket => {
+    io.on("connection", (socket) => {
         const connection = {
-            socket
+            socket,
         } as Connection;
         connections[socket.id] = connection;
 
         console.log(`player connected socket ${connection.socket.id}`);
 
         socket.on("command", (commands: Command[]) => {
-            commands.forEach(c => {
+            commands.forEach((c) => {
                 commandBuffer.push(c);
             });
         });
@@ -75,7 +75,7 @@ export default (options: ServerOptions) => {
 
     const processCommands = () => {
         const commands = commandBuffer.splice(0);
-        commands.forEach(c => {
+        commands.forEach((c) => {
             processCommand(c);
         });
     };
@@ -87,7 +87,7 @@ export default (options: ServerOptions) => {
     };
 
     return {
-        processCommands,
         emitClientStates,
-    }
+        processCommands,
+    };
 };

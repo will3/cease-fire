@@ -1,17 +1,17 @@
-import Runner from "../core/Runner";
-import Component from "../core/Component";
-import { getComponentState, State } from "./common";
 import _ from "lodash";
+import Component from "../core/Component";
+import Runner from "../core/Runner";
+import { getComponentState, State } from "./common";
 
 export interface Command {
-    type: string;
     data: any;
-};
+    type: string;
+}
 
 export interface ClientOptions {
     runner: Runner;
     socket: SocketIOClient.Socket;
-};
+}
 
 export default (options: ClientOptions) => {
     const runner = options.runner;
@@ -19,7 +19,7 @@ export default (options: ClientOptions) => {
 
     const sendCommand = (commands: Command[]) => {
         socket.emit("command", commands);
-    }
+    };
 
     const spawn = (component: Component) => {
         if (component.type == null) {
@@ -29,16 +29,16 @@ export default (options: ClientOptions) => {
         const state = getComponentState(component);
 
         sendCommand([{
+            data: state,
             type: "spawn",
-            data: state
         }]);
-    }
+    };
 
     const join = (playerId: string) => {
         socket.emit("join", {
-            playerId
+            playerId,
         });
-    }
+    };
 
     socket.on("state", (state: State) => {
         state.components.forEach((componentState) => {
@@ -55,8 +55,8 @@ export default (options: ClientOptions) => {
     });
 
     return {
-        spawn,
+        join,
         sendCommand,
-        join
+        spawn,
     };
 };
