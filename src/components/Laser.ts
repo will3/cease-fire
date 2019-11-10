@@ -78,25 +78,10 @@ export default class Laser extends Component {
         if (result != null) {
             const compoenntId = result.object.userData.componentId;
             const body = this.getComponent(compoenntId) as ShipBody;
-            const coord = body.getCoord(result.faceIndex!);
-
-            body.damage(coord, 1);
+            body.onHit(result);
         }
 
         return result != null;
-    }
-
-    private raycast(dir: Vector3, objects: Object3D[], offset = new Vector3()) {
-        const raycaster = new Raycaster(this.object.position.clone().add(offset), dir, 0, this.velocity);
-        if (objects.length === 0) {
-            return undefined;
-        }
-        const results = raycaster.intersectObjects(objects);
-        if (results.length === 0) {
-            return undefined;
-        }
-
-        return results[0];
     }
 
     private updateCollisionAsteroid() {
@@ -113,5 +98,18 @@ export default class Laser extends Component {
         }
 
         return result != null;
+    }
+
+    private raycast(dir: Vector3, objects: Object3D[], offset = new Vector3()) {
+        const raycaster = new Raycaster(this.object.position.clone().add(offset), dir, 0, this.velocity);
+        if (objects.length === 0) {
+            return undefined;
+        }
+        const results = raycaster.intersectObjects(objects);
+        if (results.length === 0) {
+            return undefined;
+        }
+
+        return results[0];
     }
 }

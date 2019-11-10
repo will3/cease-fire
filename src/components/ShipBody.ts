@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Color, FaceColors, Material, MaterialIdCount, Mesh, MeshBasicMaterial, Object3D, Vector3, VertexColors } from "three";
+import { Color, FaceColors, Material, MaterialIdCount, Mesh, MeshBasicMaterial, Object3D, Vector3, VertexColors, Intersection } from "three";
 import Component from "../core/Component";
 import { getMaterial } from "../materials";
 import { clamp } from "../math";
@@ -7,8 +7,9 @@ import ValueCurve from "../ValueCurve";
 import Chunk from "../voxel/Chunk";
 import { Mesher } from "../voxel/Mesher";
 import Explosion from "./Explosion";
+import { Hitable } from "../Hitable";
 
-export default class ShipBody extends Component {
+export default class ShipBody extends Component implements Hitable {
     public inner = new Object3D();
     public pivot = new Object3D();
     public mesh = new Mesh();
@@ -53,12 +54,13 @@ export default class ShipBody extends Component {
         }
     }
 
-    public getCoord(faceIndex: number) {
-        return this.faceIndexToCoord[faceIndex];
-    }
-
     public onDestroy() {
         this.parent.remove(this.object);
+    }
+
+    public onHit(result: Intersection) {
+        const coord = this.getCoord(result.faceIndex!);
+        this.damage(coord, 1);
     }
 
     public damage(coord: Vector3, amount: number) {
@@ -112,6 +114,10 @@ export default class ShipBody extends Component {
             .multiplyScalar(1 / count)
             .add(new Vector3(0.5, 0.5, 0.5))
             .multiplyScalar(-1);
+    }
+
+    private getCoord(faceIndex: number) {
+        return this.faceIndexToCoord[faceIndex];
     }
 }
 

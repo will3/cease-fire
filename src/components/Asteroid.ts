@@ -10,13 +10,10 @@ import {
     Vector2,
 } from "three";
 import Component from "../core/Component";
+import { Hitable } from "../Hitable";
 import { randomAxis, randomQuaternion } from "../math";
 import Noise from "../Noise";
 import Explosion from "./Explosion";
-
-export interface Hitable {
-    onHit: (result: Intersection) => void;
-}
 
 export default class Asteroid extends Component implements Hitable {
     private static material: Material;
