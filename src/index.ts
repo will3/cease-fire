@@ -40,8 +40,8 @@ const directionalLight = new DirectionalLight(new Color(0.9, 0.85, 0.7), 0.8);
 directionalLight.position.set(-0.8, 0.5, 0.3);
 scene.add(directionalLight);
 
-const backLight = new DirectionalLight(new Color(0.8, 0.8, 1.0), 0.15);
-backLight.position.set(0.8, 0.5, 0.3);
+const backLight = new DirectionalLight(new Color(0.8, 0.8, 1.0), 0.1);
+backLight.position.set(0.8, 0, 0);
 scene.add(backLight);
 
 const ambientLight = new AmbientLight(new Color(1, 1, 1), 0.1);
