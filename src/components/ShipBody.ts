@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Color, FaceColors, HSL, Intersection, Material, Mesh, MeshBasicMaterial, Object3D, Vector3 } from "three";
+import { Color, FaceColors, HSL, Intersection, Material, Mesh, MeshBasicMaterial, Object3D, Vector3, Quaternion } from "three";
 import Component from "../core/Component";
 import { Hitable } from "../Hitable";
 import { getMaterial } from "../materials";
@@ -44,7 +44,8 @@ export default class ShipBody extends Component implements Hitable {
 
     public onHit(result: Intersection) {
         const coord = this.chunkMesh.getCoord(result.faceIndex!);
-        this.damage(coord, 1);
+        // this.damage(coord, 1);
+        this.breakApart();
     }
 
     public damage(coord: Vector3, amount: number) {
@@ -74,6 +75,30 @@ export default class ShipBody extends Component implements Hitable {
                 }
             }
         }
+    }
+
+    public breakApart() {
+        _(this.chunk.map).forEach((l) => {
+            const coord = l.coord;
+            if (l.v <= 0) {
+                return;
+            }
+
+            const chunkMesh = new ChunkMesh();
+            chunkMesh.material = getMaterial("shipMaterial", () => {
+                return new MeshBasicMaterial({
+                    vertexColors: FaceColors,
+                });
+            });
+            this.addComponent(chunkMesh);
+
+            chunkMesh.chunk.set(coord.x, coord.y, coord.z, l.v);
+            chunkMesh.chunk.setColor(coord.x, coord.y, coord.z, l.c);
+            chunkMesh.mesh.position.copy(this.chunkMesh.mesh.getWorldPosition(new Vector3()));
+            chunkMesh.mesh.quaternion.copy(this.chunkMesh.mesh.getWorldQuaternion(new Quaternion()));
+
+            this.destroy();
+        });
     }
 
     private calcCenter() {

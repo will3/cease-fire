@@ -66,8 +66,8 @@ function animate() {
     runner.update(1 / 60);
     runner.beforeRender();
 
-    // renderer.render(scene, camera);
-    composer.render();
+    renderer.render(scene, camera);
+    // composer.render();
 
     requestAnimationFrame(animate);
     input.clear();
@@ -92,8 +92,7 @@ const numGrids = new Vector2(20, 20);
 const gridSize = 10;
 const center = new Vector3(numGrids.x * gridSize * 0.5, 0, numGrids.y * gridSize * 0.5);
 
-ship.object.position.copy(randomShipPosition());
-ship.object.rotation.y = Math.random() * Math.PI * 2;
+placeShip(ship);
 
 const socket = SocketIOClient("http://localhost:3000");
 
@@ -108,7 +107,7 @@ client.spawn(ship);
 const enemyShip = new Ship();
 runner.addComponent(enemyShip);
 enemyShip.startIfNeeded();
-enemyShip.object.position.copy(randomShipPosition());
+placeShip(enemyShip);
 
 cameraController.target = ship.object;
 
@@ -120,12 +119,14 @@ runner.addComponent(asteroidField);
 const starField = new StarField();
 runner.addComponent(starField);
 
-function randomShipPosition() {
-    return new Vector3(
+function placeShip(ship: Ship) {
+    const position = new Vector3(
         (Math.random() - 0.5) * 2 * 40,
         0,
         (Math.random() - 0.5) * 2 * 40,
     ).add(center);
+    ship.object.position.copy(position);
+    ship.object.rotation.y = Math.random() * Math.PI * 2;
 };
 
 animate();

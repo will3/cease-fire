@@ -74,10 +74,6 @@ export default class Ship extends Component {
         this.updateRigidBody();
     }
 
-    public breakApart() {
-
-    }
-
     public onDestroy() {
         this.parent.remove(this.object);
     }

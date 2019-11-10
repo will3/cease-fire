@@ -1,8 +1,9 @@
-import { Color } from "three";
+import { Color, Vector3 } from "three";
 
 export default class Chunk {
     public size = 32;
     public dirty = false;
+    public map: { [id: string]: { coord: Vector3, v: number, c: Color } } = {};
     private data: number[] = [];
     private color: Color[] = [];
 
@@ -10,6 +11,15 @@ export default class Chunk {
         const index = this.getIndex(i, j, k);
         this.data[index] = v;
         this.dirty = true;
+        const id = this.getId(i, j, k);
+        if (this.map[id] == null) {
+            this.map[id] = {
+                c: new Color(),
+                coord: new Vector3(i, j, k),
+                v: 0,
+            };
+        }
+        this.map[id].v = v;
     }
 
     public get(i: number, j: number, k: number) {
@@ -32,6 +42,13 @@ export default class Chunk {
         const index = this.getIndex(i, j, k);
         this.color[index] = c;
         this.dirty = true;
+        const id = this.getId(i, j, k);
+        if (this.map[id] == null) {
+            this.map[id] = {
+                coord: new Vector3(i, j, k),
+            };
+        }
+        this.map[id].c = c;
     }
 
     public getColor(i: number, j: number, k: number) {
@@ -41,5 +58,9 @@ export default class Chunk {
 
     private getIndex(i: number, j: number, k: number) {
         return (i * this.size * this.size) + (j * this.size) + k;
+    }
+
+    private getId(i: number, j: number, k: number) {
+        return i + "," + j + "," + k;
     }
 }
