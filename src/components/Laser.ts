@@ -1,11 +1,12 @@
-import { Object3D, Sprite, SpriteMaterial, Vector3, Raycaster, Mesh } from "three";
+import { Mesh, Object3D, Raycaster, Sprite, SpriteMaterial, Vector3 } from "three";
 
 import _ from "lodash";
 import Component from "../core/Component";
 import { getMaterial } from "../materials";
+import Asteroid from "./Asteroid";
 import Ship from "./Ship";
 import ShipBody from "./ShipBody";
-import Asteroid from "./Asteroid";
+import ChunkMesh from "./ChunkMesh";
 
 export default class Laser extends Component {
     private static material: SpriteMaterial;
@@ -65,9 +66,9 @@ export default class Laser extends Component {
     }
 
     private updateCollisionShip() {
-        const ships = this.findComponents("Ship") as Ship[];
+        const ships = this.findComponents("ChunkMesh") as ChunkMesh[];
 
-        const objects = _(ships).map((s) => s.body.mesh).filter((m) => m != null).value() as Mesh[];
+        const objects = _(ships).map((s) => s.mesh).filter((m) => m != null).value() as Object3D[];
         const dir = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
         const up = new Vector3(0, 1, 0);
         const right = dir.clone().cross(up);

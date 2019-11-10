@@ -6,54 +6,36 @@ import { getMaterial } from "../materials";
 import { clamp } from "../math";
 import ValueCurve from "../ValueCurve";
 import Chunk from "../voxel/Chunk";
-import { Mesher } from "../voxel/Mesher";
+import ChunkMesh from "./ChunkMesh";
 import Explosion from "./Explosion";
 
 export default class ShipBody extends Component implements Hitable {
     public inner = new Object3D();
     public pivot = new Object3D();
-    public mesh = new Mesh();
     public color = new Color(0.2, 0.6, 0.8);
-    private object = new Object3D();
+    public chunkMesh!: ChunkMesh;
 
-    private chunk = new Chunk([0, 0, 0]);
-    private material!: Material;
-    private faceIndexToCoord: { [id: number]: Vector3 } = {};
-    private dirty = false;
+    private object = new Object3D();
     private center = new Vector3();
     private damageColor = new Color();
 
     public start() {
         this.damageColor = this.color.clone().multiplyScalar(0.4);
-        this.material = getMaterial("shipMaterial", () => {
+        this.chunkMesh.material = getMaterial("shipMaterial", () => {
             return new MeshBasicMaterial({
                 vertexColors: FaceColors,
             });
         });
 
-        buildShip(this.chunk, this.color);
+        buildShip(this.chunkMesh.chunk, this.color);
 
-        this.mesh.material = this.material;
         this.center = this.calcCenter();
 
         this.parent.add(this.object);
         this.object.add(this.pivot);
         this.pivot.add(this.inner);
-        this.inner.add(this.mesh);
         this.inner.position.copy(this.center);
-
-        this.dirty = true;
-    }
-
-    public update() {
-        if (this.dirty) {
-            const result = Mesher.mesh(this.chunk);
-            this.faceIndexToCoord = result.faceIndexToCoord;
-            this.mesh.geometry = result.geometry;
-            this.mesh.userData = { componentId: this.id };
-
-            this.dirty = false;
-        }
+        this.chunkMesh.mesh.userData = { componentId: this.id };
     }
 
     public onDestroy() {
@@ -61,7 +43,7 @@ export default class ShipBody extends Component implements Hitable {
     }
 
     public onHit(result: Intersection) {
-        const coord = this.getCoord(result.faceIndex!);
+        const coord = this.chunkMesh.getCoord(result.faceIndex!);
         this.damage(coord, 1);
     }
 
@@ -85,15 +67,13 @@ export default class ShipBody extends Component implements Hitable {
                     const explosion = new Explosion();
                     explosion.scale = 4 + Math.random() * 4;
                     this.addComponent(explosion);
-                    const position = this.mesh.localToWorld(dc.clone().add(new Vector3(0.5, 0.5, 0.5)));
+                    const position = this.chunkMesh.mesh.localToWorld(dc.clone().add(new Vector3(0.5, 0.5, 0.5)));
                     explosion.object.position.copy(position);
                     explosion.wait = 0.05 * index;
                     index++;
                 }
             }
         }
-
-        this.dirty = true;
     }
 
     private calcCenter() {
@@ -119,8 +99,8 @@ export default class ShipBody extends Component implements Hitable {
             .multiplyScalar(-1);
     }
 
-    private getCoord(faceIndex: number) {
-        return this.faceIndexToCoord[faceIndex];
+    get chunk() {
+        return this.chunkMesh.chunk;
     }
 }
 

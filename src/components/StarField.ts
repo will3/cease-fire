@@ -18,7 +18,7 @@ export default class StarField extends Component {
             this.object.add(sprite);
             sprite.position.copy(position);
             const s = noise.get(position.x, position.y, position.z);
-            sprite.scale.multiplyScalar(2 + 16 * Math.pow(s, 2));
+            sprite.scale.multiplyScalar(2 + 12 * Math.pow(s, 2));
         }
     }
 

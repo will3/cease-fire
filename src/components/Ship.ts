@@ -2,6 +2,7 @@ import { Object3D, Vector3 } from "three";
 
 import _ from "lodash";
 import Component from "../core/Component";
+import ChunkMesh from "./ChunkMesh";
 import EngineParticles from "./EngineParticles";
 import ShipBody from "./ShipBody";
 import ShipControl from "./ShipControl";
@@ -16,7 +17,7 @@ export default class Ship extends Component {
     public maxRoll = Math.PI / 5;
     public rotationVelocity = new Vector3();
     public velocity = new Vector3();
-    public rotationAcc = new Vector3(0, 0, 0.2);
+    public rotationAcc = new Vector3(0, 0, 2);
     public acc = 0.04;
     public moveFriction = 0.9;
     public restFriction = 0.95;
@@ -42,6 +43,11 @@ export default class Ship extends Component {
         this.addComponent(turrent, true);
         turrent.parent = this.object;
 
+        const chunkMesh = new ChunkMesh();
+        chunkMesh.parent = this.body.inner;
+        this.body.chunkMesh = chunkMesh;
+        this.addComponent(chunkMesh, true);
+
         if (!this.isServer) {
             const left = new EngineParticles();
             left.parent = leftEngine;
@@ -66,6 +72,10 @@ export default class Ship extends Component {
 
     public update() {
         this.updateRigidBody();
+    }
+
+    public breakApart() {
+
     }
 
     public onDestroy() {

@@ -7,7 +7,7 @@ export default class Chunks {
     public getOrCreateChunk(origin: number[]) {
         const id = origin.join(",");
         if (this.map[id] == null) {
-            this.map[id] = new Chunk(origin);
+            this.map[id] = new Chunk();
         }
         return this.map[id];
     }
