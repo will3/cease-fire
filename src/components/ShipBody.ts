@@ -1,9 +1,9 @@
 import _ from "lodash";
-import { Color, FaceColors, HSL, Intersection, Material, Mesh, MeshBasicMaterial, Object3D, Vector3, Quaternion } from "three";
+import { Color, FaceColors, HSL, Intersection, Material, Mesh, MeshBasicMaterial, Object3D, Vector3, Quaternion, BoxGeometry } from "three";
 import Component from "../core/Component";
 import { Hitable } from "../Hitable";
 import { getMaterial } from "../materials";
-import { clamp } from "../math";
+import { clamp, randomAxis } from "../math";
 import ValueCurve from "../ValueCurve";
 import Chunk from "../voxel/Chunk";
 import ChunkMesh from "./ChunkMesh";
@@ -80,6 +80,8 @@ export default class ShipBody extends Component implements Hitable {
     }
 
     public breakApart() {
+        const centerExplosion = this.parent.position;
+
         _(this.chunk.map).forEach((l) => {
             const coord = l.coord;
             if (l.v <= 0) {
@@ -96,17 +98,37 @@ export default class ShipBody extends Component implements Hitable {
 
             chunkMesh.chunk.set(coord.x, coord.y, coord.z, l.v);
             chunkMesh.chunk.setColor(coord.x, coord.y, coord.z, l.c);
-            chunkMesh.mesh.position.copy(this.chunkMesh.mesh.getWorldPosition(new Vector3()));
-            chunkMesh.mesh.quaternion.copy(this.chunkMesh.mesh.getWorldQuaternion(new Quaternion()));
 
             const piece = new Piece();
             piece.chunkMesh = chunkMesh;
+            chunkMesh.parent = piece.inner;
+
+            piece.object.position.copy(this.chunkMesh.mesh.getWorldPosition(new Vector3()));
+            piece.object.quaternion.copy(this.chunkMesh.mesh.getWorldQuaternion(new Quaternion()));
+
             this.addComponent(piece);
 
-            const center = this.center.clone();
+            chunkMesh.startIfNeeded();
+            piece.startIfNeeded();
 
-            this.destroy();
+            const localCenter = piece.object.position;
+            const dir = localCenter.clone().sub(centerExplosion).normalize();
+            const acc = dir.clone().multiplyScalar(0.1)
+                .add(randomAxis().multiplyScalar(0.01));
+            piece.velocity.add(acc);
+            piece.rotationVelocity = new Quaternion().setFromAxisAngle(randomAxis(), 0.2);
+            // this.drawDebugCube(localCenter);
         });
+
+        this.destroy();
+    }
+
+    private drawDebugCube(position: Vector3) {
+        const mesh = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial({
+            color: new Color(1, 0, 0),
+        }));
+        mesh.position.copy(position);
+        this.scene.add(mesh);
     }
 
     get chunk() {
