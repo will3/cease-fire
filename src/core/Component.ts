@@ -56,10 +56,7 @@ export default class Component {
 
     public destroy() {
         this.shouldDestroy = true;
-        _(this.children)
-            .filter((c) => !c.destroyed)
-            .forEach((c) =>
-                c.destroy());
+        this.children.forEach((c) => c.destroy());
     }
 
     public addComponent(component: Component, isChild: boolean = false) {

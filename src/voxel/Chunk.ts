@@ -1,9 +1,11 @@
 import { Color, Vector3 } from "three";
 
+export type Voxel = { coord: Vector3, v: number, c: Color };
+
 export default class Chunk {
     public size = 32;
     public dirty = false;
-    public map: { [id: string]: { coord: Vector3, v: number, c: Color } } = {};
+    public map: { [id: string]: Voxel } = {};
     private data: number[] = [];
     private color: Color[] = [];
 
@@ -12,6 +14,7 @@ export default class Chunk {
         this.data[index] = v;
         this.dirty = true;
         const id = this.getId(i, j, k);
+
         if (this.map[id] == null) {
             this.map[id] = {
                 c: new Color(),
@@ -56,6 +59,11 @@ export default class Chunk {
     public getColor(i: number, j: number, k: number) {
         const index = this.getIndex(i, j, k);
         return this.color[index];
+    }
+
+    public getVoxel(coord: Vector3): Voxel {
+        const id = this.getId(coord.x, coord.y, coord.z);
+        return this.map[id];
     }
 
     private getIndex(i: number, j: number, k: number) {

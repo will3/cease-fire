@@ -53,8 +53,8 @@ export default class Asteroid extends Component implements Hitable {
 
         this.object.add(this.mesh);
 
-        const mass = this.object.scale.x * this.object.scale.y * this.object.scale.z;
-        this.quatVelocity = new Quaternion().setFromAxisAngle(randomAxis(), 0.2 / mass * Math.random());
+        const mass = Math.pow(this.object.scale.x * this.object.scale.y * this.object.scale.z, 0.5);
+        this.quatVelocity = new Quaternion().setFromAxisAngle(randomAxis(), 0.05 / mass * Math.random());
     }
 
     public update() {

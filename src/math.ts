@@ -14,7 +14,11 @@ export const random = (min: number, max: number) => {
     return min + (max - min) * Math.random();
 };
 
-export const randomQuaternion = () => {
+export const randomQuaternion = (mag: number = 1): Quaternion => {
+    if (mag !== 1) {
+        const angle = mag * Math.random() * 2 - mag;
+        return new Quaternion().setFromAxisAngle(randomAxis(), angle);
+    }
     let x: number;
     let y: number;
     let z: number;
@@ -30,4 +34,36 @@ export const randomQuaternion = () => {
 
 export const randomAxis = () => {
     return new Vector3(0, 0, 1).applyQuaternion(randomQuaternion());
+};
+
+export const randomUnitVector = () => {
+    return new Vector3(1, 0, 0).applyQuaternion(randomQuaternion());
+};
+
+export const randomSigned = () => {
+    return Math.random() > 0.5 ? 1 : -1;
+};
+
+export const randomUniformUnitVectors = (points: Vector3[], numSimulations = 3) => {
+    const simulate = () => {
+        for (const a of points) {
+            for (const b of points) {
+                if (a === b) {
+                    continue;
+                }
+
+                const dir = b.clone().sub(a).normalize();
+                const dist = b.clone().sub(a).length();
+                const offset = dir.setLength(1 / dist / dist * 0.1);
+                b.add(offset).normalize();
+                a.sub(offset).normalize();
+            }
+        }
+    };
+
+    for (let i = 0; i < numSimulations; i++) {
+        simulate();
+    }
+
+    return points;
 };

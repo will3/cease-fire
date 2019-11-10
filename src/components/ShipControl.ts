@@ -46,7 +46,7 @@ export default class ShipControl extends Component {
         const forwardVector = new Vector3(0, 0, -1).applyEuler(rotation);
 
         const targetRoll = left * this.ship.maxRoll;
-        const targetRollVelocity = (targetRoll - rotation.z) * 0.1;
+        const targetRollVelocity = (targetRoll - rotation.z) * 0.2;
         const targetRollAcc = (targetRollVelocity - this.ship.rotationVelocity.z);
         const rollAcc = clamp(targetRollAcc, -this.ship.rotationAcc.z, this.ship.rotationAcc.z);
         this.ship.rotationVelocity.z += rollAcc;

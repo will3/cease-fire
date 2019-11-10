@@ -5,16 +5,27 @@ import { Mesher } from "../voxel/Mesher";
 
 export default class ChunkMesh extends Component {
     public type = "ChunkMesh";
-    public chunk = new Chunk();
-    public mesh = new Mesh();
     public material?: Material;
+    public readonly chunk = new Chunk();
+    public readonly mesh = new Mesh();
     private faceIndexToCoord: { [id: number]: Vector3 } = {};
 
     public start() {
-        this.parent.add(this.mesh);
+        this.init();
     }
 
     public update() {
+        this.createMesh();
+    }
+
+    public init() {
+        if (this.mesh.parent != null) {
+            throw new Error("Must specify parent through property");
+        }
+        this.parent.add(this.mesh);
+    }
+
+    public createMesh() {
         if (this.material != null) {
             this.mesh.material = this.material;
         }

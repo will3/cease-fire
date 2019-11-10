@@ -23,9 +23,7 @@ export default class Laser extends Component {
 
     public start() {
         if (Laser.material == null) {
-            Laser.material = getMaterial("laser", () => new SpriteMaterial({
-                color: 0xffffff,
-            })) as SpriteMaterial;
+            Laser.material = getMaterial("laser") as SpriteMaterial;
         }
 
         const length = this.scale.length;

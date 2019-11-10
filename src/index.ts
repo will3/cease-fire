@@ -31,6 +31,7 @@ import createClient from "./networking/Client";
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new WebGLRenderer();
+
 renderer.setSize(window.innerWidth, window.innerHeight);
 const main = document.getElementById("main")!;
 main.appendChild(renderer.domElement);
@@ -47,11 +48,12 @@ scene.add(backLight);
 const ambientLight = new AmbientLight(new Color(1, 1, 1), 0.1);
 scene.add(ambientLight);
 
-const composer = new EffectComposer(renderer);
+let composer: EffectComposer;
 
 const rendering = { pixelation: true };
 
 function updatePostProcessing() {
+    composer = new EffectComposer(renderer);
     const renderPass = new RenderPass(scene, camera);
     const passes = [renderPass];
 
@@ -72,6 +74,7 @@ window.addEventListener("resize", () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
+    updatePostProcessing();
 });
 
 const input = new Input();
@@ -99,7 +102,6 @@ const ship = new Ship();
 ship.ownerId = playerId;
 ship.isOwn = true;
 runner.addComponent(ship);
-ship.startIfNeeded();
 
 const numGrids = new Vector2(20, 20);
 const gridSize = 10;
@@ -119,7 +121,6 @@ client.spawn(ship);
 
 const enemyShip = new Ship();
 runner.addComponent(enemyShip);
-enemyShip.startIfNeeded();
 placeShip(enemyShip);
 
 cameraController.target = ship.object;

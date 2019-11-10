@@ -29,6 +29,7 @@ export default class Ship extends Component {
     public start() {
         this.body = new ShipBody();
         this.body.parent = this.object;
+        this.body.ship = this;
         this.addComponent(this.body, true);
 
         const leftEngine = new Object3D();
@@ -98,8 +99,7 @@ export default class Ship extends Component {
 
         this.object.rotation.z += this.rotationVelocity.z;
 
-        const speedRatio = this.velocity.length() / this.maxSpeed;
-        this.object.rotation.y += Math.sin(this.object.rotation.z) * this.turnSpeed * speedRatio;
+        this.object.rotation.y += Math.sin(this.object.rotation.z) * this.turnSpeed;
 
         this.object.position.add(this.velocity);
 
