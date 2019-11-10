@@ -11,9 +11,21 @@ export default class Ship extends Component {
     public type = "Ship";
     public isRemote = true;
     public body!: ShipBody;
+    public object = new Object3D();
+
+    public maxRoll = Math.PI / 5;
+    public rotationVelocity = new Vector3();
+    public velocity = new Vector3();
+    public rotationAcc = new Vector3(0, 0, 0.2);
+    public acc = 0.06;
+    public moveFriction = 0.9;
+    public restFriction = 0.95;
+    public maxSpeed = 0.2;
+    public engineRunning = false;
 
     public start() {
         this.body = new ShipBody();
+        this.body.parent = this.object;
         this.addComponent(this.body, true);
 
         const leftEngine = new Object3D();
@@ -26,7 +38,7 @@ export default class Ship extends Component {
 
         const turrent = new Turrent();
         this.addComponent(turrent, true);
-        turrent.parent = this.body.object;
+        turrent.parent = this.object;
 
         if (!this.isServer) {
             const left = new EngineParticles();
@@ -39,27 +51,56 @@ export default class Ship extends Component {
 
             if (this.isOwn) {
                 const shipControl = new ShipControl();
-                shipControl.shipBody = this.body;
+                shipControl.ship = this;
                 shipControl.leftEngine = left;
                 shipControl.rightEngine = right;
                 shipControl.turrent = turrent;
                 this.addComponent(shipControl, true);
             }
         }
+
+        this.parent.add(this.object);
+    }
+
+    public update() {
+        this.updateRigidBody();
+    }
+
+    public onDestroy() {
+        this.parent.remove(this.object);
     }
 
     public serialize(): IShipData {
         this.startIfNeeded();
         return {
-            position: this.body.object.position.toArray(),
-            rotation: this.body.object.rotation.toArray(),
+            position: this.object.position.toArray(),
+            rotation: this.object.rotation.toArray(),
         };
     }
 
     public deserialize(data: IShipData) {
         this.startIfNeeded();
-        this.body.object.position.fromArray(data.position);
-        this.body.object.rotation.fromArray(data.rotation);
+        this.object.position.fromArray(data.position);
+        this.object.rotation.fromArray(data.rotation);
+    }
+
+    private updateRigidBody() {
+        const friction = this.engineRunning ? this.moveFriction : this.restFriction;
+        this.velocity.multiplyScalar(friction);
+
+        if (this.velocity.length() > this.maxSpeed) {
+            this.velocity.setLength(this.maxSpeed);
+        }
+
+        this.object.rotation.z += this.rotationVelocity.z;
+
+        const speedRatio = this.velocity.length() / this.maxSpeed;
+        this.object.rotation.y += Math.sin(this.object.rotation.z) * 0.1 * speedRatio;
+
+        this.object.position.add(this.velocity);
+
+        this.object.position.y = 0;
+        this.object.rotation.x = 0;
     }
 }
 

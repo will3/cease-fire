@@ -2,23 +2,14 @@ import { Vector3 } from "three";
 import Component from "../core/Component";
 import { clamp } from "../math";
 import EngineParticles from "./EngineParticles";
-import ShipBody from "./ShipBody";
+import Ship from "./Ship";
 import Turrent from "./Turrent";
 
 export default class ShipControl extends Component {
-    public shipBody?: ShipBody;
-
     public leftEngine?: EngineParticles;
     public rightEngine?: EngineParticles;
+    public ship!: Ship;
 
-    public maxRoll = Math.PI / 5;
-    public rotationVelocity = new Vector3();
-    public velocity = new Vector3();
-    public rotationAcc = new Vector3(0, 0, 0.2);
-    public acc = 0.06;
-    public moveFriction = 0.9;
-    public restFriction = 0.95;
-    public maxSpeed = 0.2;
     public turrent?: Turrent;
 
     public update() {
@@ -33,40 +24,23 @@ export default class ShipControl extends Component {
             forward = 1.0;
         }
 
-        const object = this.shipBody!.object;
-        const rotation = object.rotation.clone();
-        const forwardVector = new Vector3(0, 0, -1).applyEuler(rotation);
-
-        const targetRoll = left * this.maxRoll;
-        const targetRollVelocity = (targetRoll - rotation.z) * 0.1;
-        const targetRollAcc = (targetRollVelocity - this.rotationVelocity.z);
-        const rollAcc = clamp(targetRollAcc, -this.rotationAcc.z, this.rotationAcc.z);
-
-        this.velocity.add(forwardVector.clone().multiplyScalar(this.acc * forward));
-        const friction = forward > 0 ? this.moveFriction : this.restFriction;
-        this.velocity.multiplyScalar(friction);
-
-        if (this.velocity.length() > this.maxSpeed) {
-            this.velocity.setLength(this.maxSpeed);
-        }
-
-        this.rotationVelocity.z += rollAcc;
-        rotation.z += this.rotationVelocity.z;
-
-        const speedRatio = this.velocity.length() / this.maxSpeed;
-        rotation.y += Math.sin(rotation.z) * 0.1 * speedRatio;
-
-        object.position.add(this.velocity);
-        object.rotation.copy(rotation);
-
-        object.position.y = 0;
-        object.rotation.x = 0;
-
         this.leftEngine!.amount = forward;
         this.rightEngine!.amount = forward;
 
         if (this.turrent != null) {
             this.turrent.fire = fire;
         }
+
+        this.ship.engineRunning = forward > 0;
+
+        const rotation = this.ship.object.rotation.clone();
+        const forwardVector = new Vector3(0, 0, -1).applyEuler(rotation);
+
+        const targetRoll = left * this.ship.maxRoll;
+        const targetRollVelocity = (targetRoll - rotation.z) * 0.1;
+        const targetRollAcc = (targetRollVelocity - this.ship.rotationVelocity.z);
+        const rollAcc = clamp(targetRollAcc, -this.ship.rotationAcc.z, this.ship.rotationAcc.z);
+        this.ship.rotationVelocity.z += rollAcc;
+        this.ship.velocity.add(forwardVector.clone().multiplyScalar(this.ship.acc * forward));
     }
 }

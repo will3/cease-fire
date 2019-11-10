@@ -1,19 +1,19 @@
 import _ from "lodash";
-import { Color, FaceColors, Material, Mesh, MeshBasicMaterial, Object3D, Vector3, VertexColors, MaterialIdCount } from "three";
+import { Color, FaceColors, Material, MaterialIdCount, Mesh, MeshBasicMaterial, Object3D, Vector3, VertexColors } from "three";
 import Component from "../core/Component";
 import { getMaterial } from "../materials";
 import { clamp } from "../math";
+import ValueCurve from "../ValueCurve";
 import Chunk from "../voxel/Chunk";
 import { Mesher } from "../voxel/Mesher";
 import Explosion from "./Explosion";
-import ValueCurve from "../ValueCurve";
 
 export default class ShipBody extends Component {
-    public object = new Object3D();
     public inner = new Object3D();
     public pivot = new Object3D();
     public mesh = new Mesh();
     public color = new Color(0.2, 0.6, 0.8);
+    private object = new Object3D();
 
     private chunk = new Chunk([0, 0, 0]);
     private material!: Material;

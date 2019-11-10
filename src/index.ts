@@ -78,12 +78,12 @@ ship.isOwn = true;
 runner.addComponent(ship);
 ship.startIfNeeded();
 
-ship.body.object.position.set(
+ship.object.position.set(
     (Math.random() - 0.5) * 2 * 40,
     0,
     (Math.random() - 0.5) * 2 * 40,
 );
-ship.body.object.rotation.y = Math.random() * Math.PI * 2;
+ship.object.rotation.y = Math.random() * Math.PI * 2;
 
 animate();
 
@@ -100,4 +100,4 @@ client.spawn(ship);
 const enemyShip = new Ship();
 runner.addComponent(enemyShip);
 enemyShip.startIfNeeded();
-enemyShip.body.object.position.x = 10;
+enemyShip.object.position.x = 10;
