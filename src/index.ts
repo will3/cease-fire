@@ -22,6 +22,7 @@ import Ship from "./components/Ship";
 import { Input } from "./core/Input";
 import Runner from "./core/Runner";
 import createClient from "./networking/Client";
+import Asteroid from "./components/Asteroid";
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -41,11 +42,11 @@ scene.add(ambientLight);
 
 const composer = new EffectComposer(renderer);
 
-const effectPass = new EffectPass(camera, new PixelationEffect(3));
-effectPass.renderToScreen = true;
+const pixelationPass = new EffectPass(camera, new PixelationEffect(3));
+pixelationPass.renderToScreen = true;
 
 composer.addPass(new RenderPass(scene, camera));
-composer.addPass(effectPass);
+composer.addPass(pixelationPass);
 
 window.addEventListener("resize", () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -101,3 +102,6 @@ const enemyShip = new Ship();
 runner.addComponent(enemyShip);
 enemyShip.startIfNeeded();
 enemyShip.object.position.x = 10;
+
+const asteroid = new Asteroid();
+runner.addComponent(asteroid);

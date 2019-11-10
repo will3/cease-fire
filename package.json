@@ -20,6 +20,7 @@
     "lodash": "^4.17.15",
     "postprocessing": "^6.8.8",
     "shader-particle-engine": "^1.0.6",
+    "simplex-noise": "^2.4.0",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
     "three": "^0.110.0",
