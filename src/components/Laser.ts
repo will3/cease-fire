@@ -8,6 +8,7 @@ import Ship from "./Ship";
 import ShipBody from "./ShipBody";
 import ChunkMesh from "./ChunkMesh";
 import { Hitable } from "../Hitable";
+import Explosion from "./Explosion";
 
 export default class Laser extends Component {
     private static material: SpriteMaterial;
@@ -49,7 +50,12 @@ export default class Laser extends Component {
             return;
         }
 
-        if (this.updateCollision()) {
+        const result = this.updateCollision();
+
+        if (result != null) {
+            const explosion = new Explosion();
+            explosion.object.position.copy(result.result.point);
+            this.addComponent(explosion);
             this.destroy();
             return;
         }
@@ -83,7 +89,7 @@ export default class Laser extends Component {
             component.onHit(result.result);
         }
 
-        return result != null;
+        return result;
     }
 
     private raycast(dir: Vector3, objects: Object3D[], offset = new Vector3()) {

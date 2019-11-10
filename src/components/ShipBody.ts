@@ -1,15 +1,14 @@
 import _ from "lodash";
-import { Color, FaceColors, HSL, Intersection, Material, Mesh, MeshBasicMaterial, Object3D, Vector3, Quaternion, BoxGeometry } from "three";
+import { BoxGeometry, Color, FaceColors, Intersection, Mesh, MeshBasicMaterial, Object3D, Quaternion, Vector3 } from "three";
 import Component from "../core/Component";
 import { Hitable } from "../Hitable";
 import { getMaterial } from "../materials";
 import { clamp, randomAxis } from "../math";
 import ValueCurve from "../ValueCurve";
 import Chunk from "../voxel/Chunk";
-import ChunkMesh from "./ChunkMesh";
-import Explosion from "./Explosion";
-import Piece from "./Piece";
 import { calcCenter } from "../voxel/utils";
+import ChunkMesh from "./ChunkMesh";
+import Piece from "./Piece";
 
 export default class ShipBody extends Component implements Hitable {
     public inner = new Object3D();
@@ -50,9 +49,8 @@ export default class ShipBody extends Component implements Hitable {
     }
 
     public damage(coord: Vector3, amount: number) {
-        const pattern = spherePattern(2.5, new ValueCurve([1, 0], [0, 1]));
+        const pattern = spherePattern(3, new ValueCurve([1, 0.5], [0, 1]));
 
-        let index = 0;
         for (const p of pattern) {
             const dc = new Vector3(p[0], p[1], p[2]).add(coord);
             if (this.chunk.inBound(dc.x, dc.y, dc.z)) {
@@ -64,16 +62,6 @@ export default class ShipBody extends Component implements Hitable {
                 v = clamp(v, 0, 1);
                 this.chunk.set(dc.x, dc.y, dc.z, v);
                 this.chunk.setColor(dc.x, dc.y, dc.z, this.damageColor.clone().lerp(this.color, v));
-
-                if (v === 0) {
-                    const explosion = new Explosion();
-                    explosion.scale = 4 + Math.random() * 4;
-                    this.addComponent(explosion);
-                    const position = this.chunkMesh.mesh.localToWorld(dc.clone().add(new Vector3(0.5, 0.5, 0.5)));
-                    explosion.object.position.copy(position);
-                    explosion.wait = 0.05 * index;
-                    index++;
-                }
             }
         }
     }

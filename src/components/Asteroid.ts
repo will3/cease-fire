@@ -70,10 +70,7 @@ export default class Asteroid extends Component implements Hitable {
         return Math.max(this.object.scale.x, this.object.scale.y, this.object.scale.z);
     }
 
-    public onHit(result: Intersection) {
-        const explosion = new Explosion();
-        // const position = this.mesh.localToWorld(result.point);
-        explosion.object.position.copy(result.point);
-        this.addComponent(explosion);
+    public onHit(_: Intersection) {
+        // do nothing
     }
 }
