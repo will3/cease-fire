@@ -46,8 +46,7 @@ export default class ShipBody extends Component implements Hitable {
 
     public onHit(result: Intersection) {
         const coord = this.chunkMesh.getCoord(result.faceIndex!);
-        // this.damage(coord, 1);
-        this.breakApart();
+        this.damage(coord, 1);
     }
 
     public damage(coord: Vector3, amount: number) {

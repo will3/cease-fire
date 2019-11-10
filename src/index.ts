@@ -1,3 +1,4 @@
+import * as dat from "dat.gui";
 import _ from "lodash";
 import {
     EffectComposer,
@@ -48,11 +49,24 @@ scene.add(ambientLight);
 
 const composer = new EffectComposer(renderer);
 
-const pixelationPass = new EffectPass(camera, new PixelationEffect(3));
-pixelationPass.renderToScreen = true;
+const rendering = { pixelation: true };
 
-composer.addPass(new RenderPass(scene, camera));
-composer.addPass(pixelationPass);
+function updatePostProcessing() {
+    const renderPass = new RenderPass(scene, camera);
+    const passes = [renderPass];
+
+    if (rendering.pixelation) {
+        const pixelationPass = new EffectPass(camera, new PixelationEffect(3));
+        passes.push(pixelationPass);
+    }
+
+    for (const pass of passes) {
+        composer.addPass(pass);
+    }
+    passes[passes.length - 1].renderToScreen = true;
+}
+
+updatePostProcessing();
 
 window.addEventListener("resize", () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -66,8 +80,7 @@ function animate() {
     runner.update(1 / 60);
     runner.beforeRender();
 
-    renderer.render(scene, camera);
-    // composer.render();
+    composer.render();
 
     requestAnimationFrame(animate);
     input.clear();
@@ -131,4 +144,9 @@ function placeShip(ship: Ship) {
 
 animate();
 
-enemyShip.body.breakApart();
+const gui = new dat.GUI();
+const renderingFolder = gui.addFolder("rendering");
+const controller = renderingFolder.add(rendering, "pixelation");
+controller.onChange((_) => {
+    updatePostProcessing();
+});

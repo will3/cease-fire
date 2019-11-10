@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
+    "@types/dat.gui": "^0.7.5",
     "@types/express": "^4.17.2",
     "@types/lodash": "^4.14.144",
     "@types/socket.io": "^2.1.4",
@@ -15,6 +16,7 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
+    "dat.gui": "^0.7.6",
     "express": "^4.17.1",
     "keycode": "^2.2.0",
     "lodash": "^4.17.15",
