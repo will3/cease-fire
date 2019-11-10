@@ -45,7 +45,9 @@ export default class Chunk {
         const id = this.getId(i, j, k);
         if (this.map[id] == null) {
             this.map[id] = {
+                c: new Color(),
                 coord: new Vector3(i, j, k),
+                v: 0,
             };
         }
         this.map[id].c = c;
