@@ -8,6 +8,8 @@ import ValueCurve from "../ValueCurve";
 import Chunk from "../voxel/Chunk";
 import ChunkMesh from "./ChunkMesh";
 import Explosion from "./Explosion";
+import Piece from "./Piece";
+import { calcCenter } from "../voxel/utils";
 
 export default class ShipBody extends Component implements Hitable {
     public inner = new Object3D();
@@ -29,7 +31,7 @@ export default class ShipBody extends Component implements Hitable {
 
         buildShip(this.chunkMesh.chunk, this.color);
 
-        this.center = this.calcCenter();
+        this.center = calcCenter(this.chunk).multiplyScalar(-1);
 
         this.parent.add(this.object);
         this.object.add(this.pivot);
@@ -97,31 +99,14 @@ export default class ShipBody extends Component implements Hitable {
             chunkMesh.mesh.position.copy(this.chunkMesh.mesh.getWorldPosition(new Vector3()));
             chunkMesh.mesh.quaternion.copy(this.chunkMesh.mesh.getWorldQuaternion(new Quaternion()));
 
+            const piece = new Piece();
+            piece.chunkMesh = chunkMesh;
+            this.addComponent(piece);
+
+            const center = this.center.clone();
+
             this.destroy();
         });
-    }
-
-    private calcCenter() {
-        const sum = new Vector3();
-        let count = 0;
-        for (let i = 0; i < this.chunk.size; i++) {
-            for (let j = 0; j < this.chunk.size; j++) {
-                for (let k = 0; k < this.chunk.size; k++) {
-                    const v = this.chunk.get(i, j, k);
-                    if (v > 0) {
-                        sum.x += i;
-                        sum.y += j;
-                        sum.z += k;
-                        count++;
-                    }
-                }
-            }
-        }
-
-        return sum
-            .multiplyScalar(1 / count)
-            .add(new Vector3(0.5, 0.5, 0.5))
-            .multiplyScalar(-1);
     }
 
     get chunk() {
