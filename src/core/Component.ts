@@ -1,7 +1,6 @@
-import { Clock, Object3D, Scene, Camera } from "three";
+import { Camera, Clock, Object3D, Scene } from "three";
 import guid from "uuid/v4";
 
-import _ from "lodash";
 import { Input } from "./Input";
 import Runner from "./Runner";
 import { Time } from "./Time";

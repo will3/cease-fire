@@ -25,11 +25,11 @@ export const calcCenterFromVectors = (vectors: Vector3[]) => {
         }, new Vector3())
         .multiplyScalar(1 / vectors.length)
         .add(new Vector3(0.5, 0.5, 0.5));
-}
+};
 
 export interface Bounds {
-    max: Vector3,
-    min: Vector3,
+    max: Vector3;
+    min: Vector3;
 }
 
 export const calcBounds = (chunk: Chunk): Bounds => {

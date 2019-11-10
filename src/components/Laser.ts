@@ -1,13 +1,11 @@
-import { Mesh, Object3D, Raycaster, Sprite, SpriteMaterial, Vector3 } from "three";
+import { Object3D, Raycaster, Sprite, SpriteMaterial, Vector3 } from "three";
 
 import _ from "lodash";
 import Component from "../core/Component";
+import { Hitable } from "../Hitable";
 import { getMaterial } from "../materials";
 import Asteroid from "./Asteroid";
-import Ship from "./Ship";
-import ShipBody from "./ShipBody";
 import ChunkMesh from "./ChunkMesh";
-import { Hitable } from "../Hitable";
 import Explosion from "./Explosion";
 
 export default class Laser extends Component {

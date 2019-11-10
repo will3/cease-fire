@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Scene, Camera } from "three";
+import { Camera, Scene } from "three";
 import Component from "./Component";
 import ComponentFactory from "./ComponentFactory";
 import ComponentState from "./ComponentState";

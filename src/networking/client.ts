@@ -1,7 +1,6 @@
 import Runner from "../core/Runner";
 import Component from "../core/Component";
 import { getComponentState, State } from "./common";
-import SocketIOClient from "socket.io-client";
 import _ from "lodash";
 
 export interface Command {

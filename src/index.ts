@@ -133,14 +133,14 @@ runner.addComponent(asteroidField);
 const starField = new StarField();
 runner.addComponent(starField);
 
-function placeShip(ship: Ship) {
+function placeShip(s: Ship) {
     const position = new Vector3(
         (Math.random() - 0.5) * 2 * 40,
         0,
         (Math.random() - 0.5) * 2 * 40,
     ).add(center);
-    ship.object.position.copy(position);
-    ship.object.rotation.y = Math.random() * Math.PI * 2;
+    s.object.position.copy(position);
+    s.object.rotation.y = Math.random() * Math.PI * 2;
 }
 
 animate();
@@ -148,6 +148,6 @@ animate();
 const gui = new dat.GUI();
 const renderingFolder = gui.addFolder("rendering");
 const controller = renderingFolder.add(rendering, "pixelation");
-controller.onChange((_) => {
+controller.onChange(() => {
     updatePostProcessing();
 });

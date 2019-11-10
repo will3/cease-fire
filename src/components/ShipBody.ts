@@ -1,12 +1,12 @@
 import _ from "lodash";
-import { BoxGeometry, Color, Intersection, Mesh, MeshBasicMaterial, Object3D, Plane, Quaternion, Vector3 } from "three";
+import { Color, Intersection, Object3D, Plane, Quaternion, Vector3 } from "three";
 import Component from "../core/Component";
 import { Hitable } from "../Hitable";
 import { getMaterial } from "../materials";
-import { clamp, randomAxis, random, randomSigned, randomUniformUnitVectors, randomQuaternion } from "../math";
+import { clamp, random, randomQuaternion, randomSigned, randomUniformUnitVectors } from "../math";
 import ValueCurve from "../ValueCurve";
 import Chunk from "../voxel/Chunk";
-import { Bounds, calcBounds, calcCenter, divideCoords, calcCenterFromVectors } from "../voxel/utils";
+import { Bounds, calcBounds, calcCenter, calcCenterFromVectors, divideCoords } from "../voxel/utils";
 import ChunkMesh from "./ChunkMesh";
 import Piece from "./Piece";
 import Ship from "./Ship";
@@ -43,6 +43,37 @@ export default class ShipBody extends Component implements Hitable {
         if (this.input.keydown("c")) {
             this.testCut();
         }
+    }
+
+    public onDestroy() {
+        this.parent.remove(this.object);
+    }
+
+    public onHit(result: Intersection) {
+        const coord = this.chunkMesh.getCoord(result.faceIndex!);
+        this.damage(coord, 1);
+    }
+
+    public damage(coord: Vector3, amount: number) {
+        const pattern = spherePattern(3, new ValueCurve([1, 0.5], [0, 1]));
+
+        for (const p of pattern) {
+            const dc = new Vector3(p[0], p[1], p[2]).add(coord);
+            if (this.chunk.inBound(dc.x, dc.y, dc.z)) {
+                let v = this.chunk.get(dc.x, dc.y, dc.z);
+                if (v <= 0) {
+                    continue;
+                }
+                v -= p[3];
+                v = clamp(v, 0, 1);
+                this.chunk.set(dc.x, dc.y, dc.z, v);
+                this.chunk.setColor(dc.x, dc.y, dc.z, this.damageColor.clone().lerp(this.color, v));
+            }
+        }
+    }
+
+    get chunk() {
+        return this.chunkMesh.chunk;
     }
 
     private testCut() {
@@ -153,76 +184,6 @@ export default class ShipBody extends Component implements Hitable {
         }
 
         return results;
-    }
-
-    public onDestroy() {
-        this.parent.remove(this.object);
-    }
-
-    public onHit(result: Intersection) {
-        const coord = this.chunkMesh.getCoord(result.faceIndex!);
-        this.damage(coord, 1);
-    }
-
-    public damage(coord: Vector3, amount: number) {
-        const pattern = spherePattern(3, new ValueCurve([1, 0.5], [0, 1]));
-
-        for (const p of pattern) {
-            const dc = new Vector3(p[0], p[1], p[2]).add(coord);
-            if (this.chunk.inBound(dc.x, dc.y, dc.z)) {
-                let v = this.chunk.get(dc.x, dc.y, dc.z);
-                if (v <= 0) {
-                    continue;
-                }
-                v -= p[3];
-                v = clamp(v, 0, 1);
-                this.chunk.set(dc.x, dc.y, dc.z, v);
-                this.chunk.setColor(dc.x, dc.y, dc.z, this.damageColor.clone().lerp(this.color, v));
-            }
-        }
-    }
-
-    public breakApart() {
-        // _(this.chunk.map).forEach((l) => {
-        //     const coord = l.coord;
-        //     if (l.v <= 0) {
-        //         return;
-        //     }
-
-        //     const chunkMesh = new ChunkMesh();
-        //     chunkMesh.material = getMaterial("shipMaterial");
-        //     this.addComponent(chunkMesh);
-
-        //     chunkMesh.chunk.set(coord.x, coord.y, coord.z, l.v);
-        //     chunkMesh.chunk.setColor(coord.x, coord.y, coord.z, l.c);
-
-        //     chunkMesh.mesh.position.copy(chunkMesh.mesh.getWorldPosition(new Vector3()));
-        //     chunkMesh.mesh.quaternion.copy(chunkMesh.mesh.getWorldQuaternion(new Quaternion()));
-
-        //     const piece = new Piece();
-        //     piece.chunkMesh = chunkMesh;
-        //     chunkMesh.parent = piece.object;
-
-        //     piece.object.position.copy(this.chunkMesh.mesh.getWorldPosition(new Vector3()));
-        //     piece.object.quaternion.copy(this.chunkMesh.mesh.getWorldQuaternion(new Quaternion()));
-
-        //     this.addComponent(piece);
-        //     // this.drawDebugCube(localCenter);
-        // });
-
-        // this.destroy();
-    }
-
-    private drawDebugCube(position: Vector3) {
-        const mesh = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial({
-            color: new Color(1, 0, 0),
-        }));
-        mesh.position.copy(position);
-        this.scene.add(mesh);
-    }
-
-    get chunk() {
-        return this.chunkMesh.chunk;
     }
 }
 

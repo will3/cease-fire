@@ -30,12 +30,9 @@ export default class Piece extends Component {
         this.object.position.add(this.velocity);
 
         if (this.life > this.timeToLive) {
-            // const explosion = new Explosion();
-            // this.addComponent(explosion);
-            // explosion.object.position.copy(this.object.position);
             this.destroy();
         }
 
         this.life += this.time.deltaTime;
     }
-};
+}

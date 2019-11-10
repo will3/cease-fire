@@ -1,6 +1,6 @@
 import { Color, Vector3 } from "three";
 
-export type Voxel = { coord: Vector3, v: number, c: Color };
+export interface Voxel { coord: Vector3; v: number; c: Color; }
 
 export default class Chunk {
     public size = 32;

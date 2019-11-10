@@ -1,4 +1,4 @@
-import { Face3, Geometry, Vector3, Color } from "three";
+import { Color, Face3, Geometry, Vector3 } from "three";
 import Chunk from "./Chunk";
 export class Mesher {
     public static mesh(chunk: Chunk) {

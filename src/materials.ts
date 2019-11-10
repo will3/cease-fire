@@ -22,4 +22,4 @@ const createMaterial = (key: materialTypes) => {
                 color: 0xffffff,
             });
     }
-}
+};
