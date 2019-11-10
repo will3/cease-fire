@@ -22,6 +22,7 @@ import componentFactory from "./componentFactory";
 import AsteroidField from "./components/AsteroidField";
 import CameraController from "./components/CameraController";
 import Ship from "./components/Ship";
+import StarField from "./components/StarField";
 import { Input } from "./core/Input";
 import Runner from "./core/Runner";
 import createClient from "./networking/Client";
@@ -63,8 +64,11 @@ const input = new Input();
 
 function animate() {
     runner.update(1 / 60);
+    runner.beforeRender();
+
     // renderer.render(scene, camera);
     composer.render();
+
     requestAnimationFrame(animate);
     input.clear();
 }
@@ -88,11 +92,7 @@ const numGrids = new Vector2(20, 20);
 const gridSize = 10;
 const center = new Vector3(numGrids.x * gridSize * 0.5, 0, numGrids.y * gridSize * 0.5);
 
-ship.object.position.set(
-    (Math.random() - 0.5) * 2 * 40,
-    0,
-    (Math.random() - 0.5) * 2 * 40,
-).add(center);
+ship.object.position.copy(randomShipPosition());
 ship.object.rotation.y = Math.random() * Math.PI * 2;
 
 const socket = SocketIOClient("http://localhost:3000");
@@ -108,7 +108,7 @@ client.spawn(ship);
 const enemyShip = new Ship();
 runner.addComponent(enemyShip);
 enemyShip.startIfNeeded();
-enemyShip.object.position.x = 10;
+enemyShip.object.position.copy(randomShipPosition());
 
 cameraController.target = ship.object;
 
@@ -116,5 +116,16 @@ const asteroidField = new AsteroidField();
 asteroidField.numGrids = numGrids;
 asteroidField.gridSize = gridSize;
 runner.addComponent(asteroidField);
+
+const starField = new StarField();
+runner.addComponent(starField);
+
+function randomShipPosition() {
+    return new Vector3(
+        (Math.random() - 0.5) * 2 * 40,
+        0,
+        (Math.random() - 0.5) * 2 * 40,
+    ).add(center);
+};
 
 animate();

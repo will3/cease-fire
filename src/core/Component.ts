@@ -50,6 +50,10 @@ export default class Component {
         // TODO override
     }
 
+    public beforeRender() {
+        // TODO override
+    }
+
     public destroy() {
         this.shouldDestroy = true;
         _(this.children)

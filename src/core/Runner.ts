@@ -90,4 +90,10 @@ export default class Runner {
         this.time.deltaTime = dt;
         this.time.elaspedTime += dt;
     }
+
+    public beforeRender() {
+        _.forEach(this.components, (component) => {
+            component.beforeRender();
+        });
+    }
 }

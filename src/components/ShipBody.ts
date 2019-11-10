@@ -1,13 +1,13 @@
 import _ from "lodash";
-import { Color, FaceColors, Material, MaterialIdCount, Mesh, MeshBasicMaterial, Object3D, Vector3, VertexColors, Intersection } from "three";
+import { Color, FaceColors, HSL, Intersection, Material, Mesh, MeshBasicMaterial, Object3D, Vector3 } from "three";
 import Component from "../core/Component";
+import { Hitable } from "../Hitable";
 import { getMaterial } from "../materials";
 import { clamp } from "../math";
 import ValueCurve from "../ValueCurve";
 import Chunk from "../voxel/Chunk";
 import { Mesher } from "../voxel/Mesher";
 import Explosion from "./Explosion";
-import { Hitable } from "../Hitable";
 
 export default class ShipBody extends Component implements Hitable {
     public inner = new Object3D();
@@ -21,8 +21,10 @@ export default class ShipBody extends Component implements Hitable {
     private faceIndexToCoord: { [id: number]: Vector3 } = {};
     private dirty = false;
     private center = new Vector3();
+    private damageColor = new Color();
 
     public start() {
+        this.damageColor = this.color.clone().multiplyScalar(0.4);
         this.material = getMaterial("shipMaterial", () => {
             return new MeshBasicMaterial({
                 vertexColors: FaceColors,
@@ -76,7 +78,8 @@ export default class ShipBody extends Component implements Hitable {
                 }
                 v -= p[3];
                 v = clamp(v, 0, 1);
-                // this.chunk.set(dc.x, dc.y, dc.z, v);
+                this.chunk.set(dc.x, dc.y, dc.z, v);
+                this.chunk.setColor(dc.x, dc.y, dc.z, this.damageColor.clone().lerp(this.color, v));
 
                 if (v === 0) {
                     const explosion = new Explosion();

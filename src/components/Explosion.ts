@@ -8,7 +8,7 @@ export default class Explosion extends Component {
     public plane = new Mesh();
     public timeToLive = 0.3;
     public scaleCurve = new ValueCurve([0, 1, 1, 0.8], [0, 0.2, 0.3, 1]);
-    public opacityCurve = new ValueCurve([0, 1.0, 1.0, 0.2], [0, 0.2, 0.3, 1]);
+    public opacityCurve = new ValueCurve([0, 1.0, 1.0, 0.5], [0, 0.2, 0.3, 1]);
     public scale = 5.0;
     public wait = 0;
 
