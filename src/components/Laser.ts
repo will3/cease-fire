@@ -7,6 +7,7 @@ import Asteroid from "./Asteroid";
 import Ship from "./Ship";
 import ShipBody from "./ShipBody";
 import ChunkMesh from "./ChunkMesh";
+import { Hitable } from "../Hitable";
 
 export default class Laser extends Component {
     private static material: SpriteMaterial;
@@ -61,14 +62,15 @@ export default class Laser extends Component {
         this.parent.remove(this.object);
     }
 
-    private updateCollision() {
-        return this.updateCollisionShip() || this.updateCollisionAsteroid();
+    private getCollidableObjects() {
+        const chunkMeshes = _(this.findComponents("ChunkMesh") as ChunkMesh[]).map((c) => c.mesh).value();
+        const asteroids = _(this.findComponents("Asteroid") as Asteroid[]).map((c) => c.mesh).value();
+
+        return chunkMeshes.concat(asteroids).filter((o) => o != null);
     }
 
-    private updateCollisionShip() {
-        const ships = this.findComponents("ChunkMesh") as ChunkMesh[];
-
-        const objects = _(ships).map((s) => s.mesh).filter((m) => m != null).value() as Object3D[];
+    private updateCollision() {
+        const objects = this.getCollidableObjects();
         const dir = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
         const up = new Vector3(0, 1, 0);
         const right = dir.clone().cross(up);
@@ -77,25 +79,8 @@ export default class Laser extends Component {
             this.raycast(dir, objects, right.clone().multiplyScalar(-0.5));
 
         if (result != null) {
-            const compoenntId = result.object.userData.componentId;
-            const body = this.getComponent(compoenntId) as ShipBody;
-            body.onHit(result);
-        }
-
-        return result != null;
-    }
-
-    private updateCollisionAsteroid() {
-        const asteroids = this.findComponents("Asteroid") as Asteroid[];
-
-        const objects = _(asteroids).map((s) => s.mesh).value() as Object3D[];
-        const dir = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
-        const result = this.raycast(dir, objects);
-
-        if (result != null) {
-            const componentId = result.object.userData.componentId;
-            const asteroid = this.getComponent(componentId) as Asteroid;
-            asteroid.onHit(result);
+            const component = result.component as unknown as Hitable;
+            component.onHit(result.result);
         }
 
         return result != null;
@@ -111,6 +96,17 @@ export default class Laser extends Component {
             return undefined;
         }
 
-        return results[0];
+        const result = results[0];
+        const componentId = result.object.userData.componentId;
+        const component = this.getComponent(componentId);
+
+        if (component == null) {
+            return undefined;
+        }
+
+        return {
+            component,
+            result,
+        };
     }
 }
