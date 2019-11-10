@@ -80,8 +80,6 @@ export default class ShipBody extends Component implements Hitable {
     }
 
     public breakApart() {
-        const centerExplosion = this.parent.position;
-
         _(this.chunk.map).forEach((l) => {
             const coord = l.coord;
             if (l.v <= 0) {
@@ -99,24 +97,17 @@ export default class ShipBody extends Component implements Hitable {
             chunkMesh.chunk.set(coord.x, coord.y, coord.z, l.v);
             chunkMesh.chunk.setColor(coord.x, coord.y, coord.z, l.c);
 
+            chunkMesh.mesh.position.copy(chunkMesh.mesh.getWorldPosition(new Vector3()));
+            chunkMesh.mesh.quaternion.copy(chunkMesh.mesh.getWorldQuaternion(new Quaternion()));
+
             const piece = new Piece();
             piece.chunkMesh = chunkMesh;
-            chunkMesh.parent = piece.inner;
+            chunkMesh.parent = piece.object;
 
             piece.object.position.copy(this.chunkMesh.mesh.getWorldPosition(new Vector3()));
             piece.object.quaternion.copy(this.chunkMesh.mesh.getWorldQuaternion(new Quaternion()));
 
             this.addComponent(piece);
-
-            chunkMesh.startIfNeeded();
-            piece.startIfNeeded();
-
-            const localCenter = piece.object.position;
-            const dir = localCenter.clone().sub(centerExplosion).normalize();
-            const acc = dir.clone().multiplyScalar(0.1)
-                .add(randomAxis().multiplyScalar(0.01));
-            piece.velocity.add(acc);
-            piece.rotationVelocity = new Quaternion().setFromAxisAngle(randomAxis(), 0.2);
             // this.drawDebugCube(localCenter);
         });
 

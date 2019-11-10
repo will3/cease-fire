@@ -127,6 +127,8 @@ function placeShip(ship: Ship) {
     ).add(center);
     ship.object.position.copy(position);
     ship.object.rotation.y = Math.random() * Math.PI * 2;
-};
+}
 
 animate();
+
+enemyShip.body.breakApart();

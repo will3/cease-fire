@@ -25,6 +25,10 @@ export default class ShipControl extends Component {
             forward = 0.5;
         }
 
+        if (boost) {
+            forward = 1.0;
+        }
+
         this.leftEngine.amount = forward;
         this.rightEngine.amount = forward;
         this.leftEngine.boost = boost;
