@@ -95,8 +95,6 @@ ship.object.position.set(
 ).add(center);
 ship.object.rotation.y = Math.random() * Math.PI * 2;
 
-animate();
-
 const socket = SocketIOClient("http://localhost:3000");
 
 const client = createClient({
@@ -112,9 +110,11 @@ runner.addComponent(enemyShip);
 enemyShip.startIfNeeded();
 enemyShip.object.position.x = 10;
 
-cameraController.target.copy(center);
+cameraController.target = ship.object;
 
 const asteroidField = new AsteroidField();
 asteroidField.numGrids = numGrids;
 asteroidField.gridSize = gridSize;
 runner.addComponent(asteroidField);
+
+animate();
