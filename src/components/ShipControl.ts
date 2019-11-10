@@ -6,8 +6,8 @@ import Ship from "./Ship";
 import Turrent from "./Turrent";
 
 export default class ShipControl extends Component {
-    public leftEngine?: EngineParticles;
-    public rightEngine?: EngineParticles;
+    public leftEngine!: EngineParticles;
+    public rightEngine!: EngineParticles;
     public ship!: Ship;
 
     public turrent?: Turrent;
@@ -16,6 +16,7 @@ export default class ShipControl extends Component {
         const left = this.input.key("a") ? 1.0 : 0.0 - (this.input.key("d") ? 1.0 : 0.0);
         let forward = this.input.key("w") ? 1.0 : 0.0 - (this.input.key("s") ? 1.0 : 0.0);
         const fire = this.input.key("j");
+        const boost = this.input.key("k");
 
         if (forward < 0) {
             forward = 0;
@@ -24,8 +25,12 @@ export default class ShipControl extends Component {
             forward = 1.0;
         }
 
-        this.leftEngine!.amount = forward;
-        this.rightEngine!.amount = forward;
+        this.leftEngine.amount = forward;
+        this.rightEngine.amount = forward;
+        this.leftEngine.boost = boost;
+        this.rightEngine.boost = boost;
+
+        this.ship.boost = boost;
 
         if (this.turrent != null) {
             this.turrent.fire = fire;
@@ -41,6 +46,8 @@ export default class ShipControl extends Component {
         const targetRollAcc = (targetRollVelocity - this.ship.rotationVelocity.z);
         const rollAcc = clamp(targetRollAcc, -this.ship.rotationAcc.z, this.ship.rotationAcc.z);
         this.ship.rotationVelocity.z += rollAcc;
-        this.ship.velocity.add(forwardVector.clone().multiplyScalar(this.ship.acc * forward));
+        const boostFactor = boost ? 2 : 1;
+        const acc = forwardVector.clone().multiplyScalar(this.ship.acc * forward).multiplyScalar(boostFactor);
+        this.ship.velocity.add(acc);
     }
 }

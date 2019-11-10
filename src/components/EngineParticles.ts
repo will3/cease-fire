@@ -6,6 +6,7 @@ export default class EngineParticles extends Component {
     public object?: Object3D;
     public emitter: any;
     public amount = 0.0;
+    public boost = false;
 
     public start() {
         // TODO use shared image
@@ -48,12 +49,15 @@ export default class EngineParticles extends Component {
 
     public update() {
         this.group.tick(1 / 60);
+
+        const sizeScale = this.boost ? 2 : 1;
+
         if (this.amount === 0) {
             this.emitter.disable();
         } else {
             this.emitter.enable();
-            this.emitter.size.spread = [0, 2.5];
-            this.emitter.size.value = [6, 0];
+            this.emitter.size.spread = [0, 2.5].map((v) => v * sizeScale);
+            this.emitter.size.value = [6, 0].map((v) => v * sizeScale);
         }
 
         this.emitter.position.value = this.parent.getWorldPosition(new Vector3());

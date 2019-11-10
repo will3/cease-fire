@@ -17,11 +17,13 @@ export default class Ship extends Component {
     public rotationVelocity = new Vector3();
     public velocity = new Vector3();
     public rotationAcc = new Vector3(0, 0, 0.2);
-    public acc = 0.06;
+    public acc = 0.04;
     public moveFriction = 0.9;
     public restFriction = 0.95;
     public maxSpeed = 0.2;
     public engineRunning = false;
+    public boost = false;
+    public turnSpeed = 0.05;
 
     public start() {
         this.body = new ShipBody();
@@ -88,14 +90,10 @@ export default class Ship extends Component {
         const friction = this.engineRunning ? this.moveFriction : this.restFriction;
         this.velocity.multiplyScalar(friction);
 
-        if (this.velocity.length() > this.maxSpeed) {
-            this.velocity.setLength(this.maxSpeed);
-        }
-
         this.object.rotation.z += this.rotationVelocity.z;
 
         const speedRatio = this.velocity.length() / this.maxSpeed;
-        this.object.rotation.y += Math.sin(this.object.rotation.z) * 0.1 * speedRatio;
+        this.object.rotation.y += Math.sin(this.object.rotation.z) * this.turnSpeed * speedRatio;
 
         this.object.position.add(this.velocity);
 
