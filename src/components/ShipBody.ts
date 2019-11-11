@@ -6,7 +6,7 @@ import { getMaterial } from "../materials";
 import { clamp } from "../math";
 import ValueCurve from "../ValueCurve";
 import Chunk from "../voxel/Chunk";
-import { calcCenter } from "../voxel/utils";
+import { calcCenter, countVoxels } from "../voxel/utils";
 import ChunkMesh from "./ChunkMesh";
 import Piece from "./Piece";
 import Ship from "./Ship";
@@ -18,9 +18,11 @@ export default class ShipBody extends Component implements Hitable {
     public chunkMesh!: ChunkMesh;
     public ship!: Ship;
     public readonly center = new Vector3();
+    public mass = 0;
 
     private object = new Object3D();
     private damageColor = new Color();
+    private massDirty = true;
 
     public start() {
         this.damageColor = this.color.clone().multiplyScalar(0.4);
@@ -35,6 +37,17 @@ export default class ShipBody extends Component implements Hitable {
         this.pivot.add(this.inner);
         this.inner.position.copy(this.center.clone().multiplyScalar(-1));
         this.chunkMesh.mesh.userData = { componentId: this.id };
+    }
+
+    public update() {
+        if (this.massDirty) {
+            this.mass = countVoxels(this.chunk);
+            this.massDirty = false;
+        }
+
+        if (this.mass === 0) {
+            this.ship.destroy();
+        }
     }
 
     public onDestroy() {
@@ -59,6 +72,7 @@ export default class ShipBody extends Component implements Hitable {
                 v -= p[3];
                 v = clamp(v, 0, 1);
                 this.chunk.set(dc.x, dc.y, dc.z, v);
+                this.massDirty = true;
                 this.chunk.setColor(dc.x, dc.y, dc.z, this.damageColor.clone().lerp(this.color, v));
             }
         }
@@ -79,6 +93,11 @@ export default class ShipBody extends Component implements Hitable {
         piece.object.quaternion.copy(this.chunkMesh.mesh.getWorldQuaternion(new Quaternion()));
 
         this.addComponent(piece);
+
+        for (const coord of coords) {
+            this.chunk.set(coord.x, coord.y, coord.z, 0);
+            this.massDirty = true;
+        }
 
         return piece;
     }

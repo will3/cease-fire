@@ -83,8 +83,6 @@ export default class ShipCutter extends Component {
             piece.rotationSpeed = randomQuaternion(Math.pow(random(0.5, 1), 2) * 2 / rotationInertia);
             piece.velocity = dir.multiplyScalar(random(0.5, 1) * 0.4 / mass);
         });
-
-        this.shipBody.ship.destroy();
     }
 
     private randomCutPlane(bounds: Bounds) {
