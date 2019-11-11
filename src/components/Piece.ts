@@ -1,6 +1,6 @@
 import { Object3D, Quaternion, Vector3 } from "three";
 import Component from "../core/Component";
-import { calcCenter } from "../voxel/utils";
+import { calcCenter, countVoxels } from "../voxel/utils";
 import ChunkMesh from "./ChunkMesh";
 
 export default class Piece extends Component {
@@ -34,5 +34,9 @@ export default class Piece extends Component {
         }
 
         this.life += this.time.deltaTime;
+    }
+
+    public calcMass() {
+        return countVoxels(this.chunkMesh.chunk);
     }
 }

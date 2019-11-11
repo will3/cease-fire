@@ -1,17 +1,15 @@
 import _ from "lodash";
-import { Color, Intersection, Object3D, Plane, Quaternion, Vector3 } from "three";
+import { Color, Intersection, Object3D, Quaternion, Vector3 } from "three";
 import Component from "../core/Component";
 import { Hitable } from "../Hitable";
 import { getMaterial } from "../materials";
-import { clamp, random, randomQuaternion, randomSigned, randomUniformUnitVectors } from "../math";
+import { clamp } from "../math";
 import ValueCurve from "../ValueCurve";
 import Chunk from "../voxel/Chunk";
-import { Bounds, calcBounds, calcCenter, calcCenterFromVectors, divideCoords } from "../voxel/utils";
+import { calcCenter } from "../voxel/utils";
 import ChunkMesh from "./ChunkMesh";
 import Piece from "./Piece";
 import Ship from "./Ship";
-
-interface CutResult { [hash: string]: Vector3[]; }
 
 export default class ShipBody extends Component implements Hitable {
     public inner = new Object3D();
@@ -19,9 +17,9 @@ export default class ShipBody extends Component implements Hitable {
     public color = new Color(0.2, 0.6, 0.8);
     public chunkMesh!: ChunkMesh;
     public ship!: Ship;
+    public readonly center = new Vector3();
 
     private object = new Object3D();
-    private center = new Vector3();
     private damageColor = new Color();
 
     public start() {
@@ -30,19 +28,13 @@ export default class ShipBody extends Component implements Hitable {
 
         buildShip(this.chunkMesh.chunk, this.color);
 
-        this.center = calcCenter(this.chunk);
+        this.center.copy(calcCenter(this.chunk));
 
         this.parent.add(this.object);
         this.object.add(this.pivot);
         this.pivot.add(this.inner);
         this.inner.position.copy(this.center.clone().multiplyScalar(-1));
         this.chunkMesh.mesh.userData = { componentId: this.id };
-    }
-
-    public update() {
-        if (this.input.keydown("c")) {
-            this.testCut();
-        }
     }
 
     public onDestroy() {
@@ -72,50 +64,7 @@ export default class ShipBody extends Component implements Hitable {
         }
     }
 
-    get chunk() {
-        return this.chunkMesh.chunk;
-    }
-
-    private testCut() {
-        const bounds = calcBounds(this.chunk);
-        const count = 3;
-        const planes = [];
-        for (let i = 0; i < count; i++) {
-            planes.push(this.randomCutPlane(bounds));
-        }
-
-        const results = this.cut(planes);
-
-        // this.colorizeCutResult(results);
-
-        this.createPieces(results);
-    }
-
-    private createPieces(results: CutResult) {
-        const groups = _(results).map((list) => divideCoords(list)).reduce((list, a) => {
-            list = list.concat(a);
-            return list;
-        }, [] as Vector3[][]);
-
-        const vectors = groups
-            .map((group) => {
-                return calcCenterFromVectors(group);
-            })
-            .map((v) => {
-                return v.sub(this.center);
-            })
-            .map((v) => v.normalize());
-
-        randomUniformUnitVectors(vectors);
-
-        groups.forEach((group, index) => {
-            this.createPiece(group, vectors[index]);
-        });
-
-        this.ship.destroy();
-    }
-
-    private createPiece(coords: Vector3[], dir: Vector3) {
+    public createPiece(coords: Vector3[]) {
         const piece = new Piece();
 
         piece.chunkMesh.material = getMaterial("shipMaterial");
@@ -129,61 +78,13 @@ export default class ShipBody extends Component implements Hitable {
         piece.object.position.copy(this.chunkMesh.mesh.getWorldPosition(new Vector3()));
         piece.object.quaternion.copy(this.chunkMesh.mesh.getWorldQuaternion(new Quaternion()));
 
-        const mass = Math.pow(coords.length, 0.4);
-        const rotationInertia = mass * mass;
-        piece.rotationSpeed = randomQuaternion(Math.pow(random(0.5, 1), 2) * 2 / rotationInertia);
-        piece.velocity = dir.multiplyScalar(random(0.5, 1) * 0.4 / mass);
-
         this.addComponent(piece);
+
+        return piece;
     }
 
-    private randomCutPlane(bounds: Bounds) {
-        const halfX = (bounds.max.x - bounds.min.x) / 2;
-        const x = halfX + halfX * Math.pow(Math.random(), 1.2) * randomSigned();
-        const point = this.center.clone().setX(x);
-        const angle = Math.pow(Math.random(), 1.2) * Math.PI * 2;
-        const normal = new Vector3(Math.cos(angle), 0, Math.sin(angle));
-        return new Plane()
-            .setFromNormalAndCoplanarPoint(normal, point);
-    }
-
-    private colorizeCutResult(results: CutResult) {
-        for (const hash in results) {
-            const color = new Color(Math.random(), Math.random(), Math.random());
-            const list = results[hash];
-            for (const coord of list) {
-                this.chunk.setColor(coord.x, coord.y, coord.z, color);
-            }
-        }
-    }
-
-    private cut(planes: Plane[]) {
-        const map: { [id: string]: { coord: Vector3, results: number[] } } = {};
-
-        _(this.chunk.map).forEach((line) => {
-            const coord = line.coord;
-            const id = coord.toArray().join(",");
-            map[id] = { coord, results: [] };
-            for (let i = 0; i < planes.length; i++) {
-                const plane = planes[i];
-                const distance = plane.distanceToPoint(line.coord.clone().add(new Vector3(0.5, 0.5, 0.5)));
-                const side = distance < 0 ? 0 : 1;
-                map[id].results[i] = side;
-            }
-        });
-
-        const results: CutResult = {};
-
-        for (const id in map) {
-            const item = map[id];
-            const hash = item.results.join("-");
-            if (results[hash] == null) {
-                results[hash] = [];
-            }
-            results[hash].push(item.coord);
-        }
-
-        return results;
+    get chunk() {
+        return this.chunkMesh.chunk;
     }
 }
 

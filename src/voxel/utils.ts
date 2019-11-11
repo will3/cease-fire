@@ -139,6 +139,10 @@ export const divideCoords = (coords: Vector3[]): Vector3[][] => {
     return groups;
 };
 
+export const countVoxels = (chunk: Chunk) => {
+    return _(chunk.map).filter((v) => v.v > 0).value().length;
+};
+
 const getId = (coord: Vector3) => {
     return coord.toArray().join(",");
 };

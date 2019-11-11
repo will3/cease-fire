@@ -6,6 +6,7 @@ import ChunkMesh from "./ChunkMesh";
 import EngineParticles from "./EngineParticles";
 import ShipBody from "./ShipBody";
 import ShipControl from "./ShipControl";
+import ShipCutter from "./ShipCutter";
 import Turrent from "./Turrent";
 
 export default class Ship extends Component {
@@ -48,6 +49,10 @@ export default class Ship extends Component {
         chunkMesh.parent = this.body.inner;
         this.body.chunkMesh = chunkMesh;
         this.addComponent(chunkMesh, true);
+
+        const cutter = new ShipCutter();
+        cutter.shipBody = this.body;
+        this.addComponent(cutter, true);
 
         if (!this.isServer) {
             const left = new EngineParticles();
