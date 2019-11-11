@@ -2,13 +2,13 @@ import { Vector3 } from "three";
 import Component from "../core/Component";
 import { clamp } from "../math";
 import EngineParticles from "./EngineParticles";
-import Ship from "./Ship";
+import ShipRigidBody from "./ShipRigidBody";
 import Turrent from "./Turrent";
 
 export default class ShipControl extends Component {
     public leftEngine!: EngineParticles;
     public rightEngine!: EngineParticles;
-    public ship!: Ship;
+    public rigidBody!: ShipRigidBody;
 
     public turrent?: Turrent;
 
@@ -34,24 +34,24 @@ export default class ShipControl extends Component {
         this.leftEngine.boost = boost;
         this.rightEngine.boost = boost;
 
-        this.ship.boost = boost;
+        this.rigidBody.boost = boost;
 
         if (this.turrent != null) {
             this.turrent.fire = fire;
         }
 
-        this.ship.engineRunning = forward > 0;
+        this.rigidBody.engineRunning = forward > 0;
 
-        const rotation = this.ship.object.rotation.clone();
+        const rotation = this.rigidBody.object.rotation.clone();
         const forwardVector = new Vector3(0, 0, -1).applyEuler(rotation);
 
-        const targetRoll = left * this.ship.maxRoll;
+        const targetRoll = left * this.rigidBody.maxRoll;
         const targetRollVelocity = (targetRoll - rotation.z) * 0.2;
-        const targetRollAcc = (targetRollVelocity - this.ship.rotationVelocity.z);
-        const rollAcc = clamp(targetRollAcc, -this.ship.rotationAcc.z, this.ship.rotationAcc.z);
-        this.ship.rotationVelocity.z += rollAcc;
+        const targetRollAcc = (targetRollVelocity - this.rigidBody.rotationVelocity.z);
+        const rollAcc = clamp(targetRollAcc, -this.rigidBody.rotationAcc.z, this.rigidBody.rotationAcc.z);
+        this.rigidBody.rotationVelocity.z += rollAcc;
         const boostFactor = boost ? 2 : 1;
-        const acc = forwardVector.clone().multiplyScalar(this.ship.acc * forward).multiplyScalar(boostFactor);
-        this.ship.velocity.add(acc);
+        const acc = forwardVector.clone().multiplyScalar(this.rigidBody.acc * forward).multiplyScalar(boostFactor);
+        this.rigidBody.velocity.add(acc);
     }
 }

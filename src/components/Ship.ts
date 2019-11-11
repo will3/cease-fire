@@ -7,6 +7,7 @@ import EngineParticles from "./EngineParticles";
 import ShipBody from "./ShipBody";
 import ShipControl from "./ShipControl";
 import ShipCutter from "./ShipCutter";
+import ShipRigidBody from "./ShipRigidBody";
 import Turrent from "./Turrent";
 
 export default class Ship extends Component {
@@ -14,18 +15,6 @@ export default class Ship extends Component {
     public isRemote = true;
     public body!: ShipBody;
     public object = new Object3D();
-
-    public maxRoll = Math.PI / 5;
-    public rotationVelocity = new Vector3();
-    public velocity = new Vector3();
-    public rotationAcc = new Vector3(0, 0, 2);
-    public acc = 0.04;
-    public moveFriction = 0.9;
-    public restFriction = 0.95;
-    public maxSpeed = 0.2;
-    public engineRunning = false;
-    public boost = false;
-    public turnSpeed = 0.05;
 
     public start() {
         this.body = new ShipBody();
@@ -54,6 +43,10 @@ export default class Ship extends Component {
         cutter.shipBody = this.body;
         this.addComponent(cutter, true);
 
+        const rigidBody = new ShipRigidBody();
+        rigidBody.object = this.object;
+        this.addComponent(rigidBody, true);
+
         if (!this.isServer) {
             const left = new EngineParticles();
             left.parent = leftEngine;
@@ -65,7 +58,7 @@ export default class Ship extends Component {
 
             if (this.isOwn) {
                 const shipControl = new ShipControl();
-                shipControl.ship = this;
+                shipControl.rigidBody = rigidBody;
                 shipControl.leftEngine = left;
                 shipControl.rightEngine = right;
                 shipControl.turrent = turrent;
@@ -74,10 +67,6 @@ export default class Ship extends Component {
         }
 
         this.parent.add(this.object);
-    }
-
-    public update() {
-        this.updateRigidBody();
     }
 
     public onDestroy() {
@@ -96,20 +85,6 @@ export default class Ship extends Component {
         this.startIfNeeded();
         this.object.position.fromArray(data.position);
         this.object.rotation.fromArray(data.rotation);
-    }
-
-    private updateRigidBody() {
-        const friction = this.engineRunning ? this.moveFriction : this.restFriction;
-        this.velocity.multiplyScalar(friction);
-
-        this.object.rotation.z += this.rotationVelocity.z;
-
-        this.object.rotation.y += Math.sin(this.object.rotation.z) * this.turnSpeed;
-
-        this.object.position.add(this.velocity);
-
-        this.object.position.y = 0;
-        this.object.rotation.x = 0;
     }
 }
 
