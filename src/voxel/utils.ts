@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Vector3 } from "three";
+import { Vector3, Sphere } from "three";
 import Chunk from "./Chunk";
 
 export const calcCenter = (chunk: Chunk) => {
@@ -145,4 +145,23 @@ export const countVoxels = (chunk: Chunk) => {
 
 const getId = (coord: Vector3) => {
     return coord.toArray().join(",");
+};
+
+export const calcBoundingSphere = (chunk: Chunk): Sphere => {
+    const center = calcCenter(chunk);
+
+    let radius = -Infinity;
+    _(chunk.map).forEach((v) => {
+        const dist =
+            v.coord.clone()
+                .add(new Vector3(0.5, 0.5, 0.5))
+                .sub(center)
+                .length();
+
+        if (dist > radius) {
+            radius = dist;
+        }
+    });
+
+    return new Sphere(center, radius + 0.5);
 };
