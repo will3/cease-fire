@@ -25,7 +25,7 @@ export default class Component {
     public isServer = false;
     public ownerId?: string;
     public id = guid();
-    private children: Component[] = [];
+    public readonly children: Component[] = [];
 
     public startIfNeeded() {
         if (this.started) {
@@ -54,8 +54,7 @@ export default class Component {
     }
 
     public destroy() {
-        this.shouldDestroy = true;
-        this.children.forEach((c) => c.destroy());
+        this.runner.destroyComponent(this);
     }
 
     public addComponent(component: Component, isChild: boolean = false) {

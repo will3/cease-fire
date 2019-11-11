@@ -44,6 +44,10 @@ export default class Runner {
         this.addComponent(component);
     }
 
+    public getComponent(id: string) {
+        return this.components[id];
+    }
+
     public findComponents(type: string) {
         return _(this.components).filter((c) => c.type === type).value();
     }
@@ -53,8 +57,9 @@ export default class Runner {
         this.injectDeps(component);
     }
 
-    public getComponent(id: string) {
-        return this.components[id];
+    public destroyComponent(component: Component) {
+        component.shouldDestroy = true;
+        component.children.forEach((c) => c.destroy());
     }
 
     public injectDeps(component: Component) {
