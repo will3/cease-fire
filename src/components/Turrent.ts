@@ -19,6 +19,9 @@ export default class Turrent extends Component {
                 const dir = offset.clone().applyEuler(rotation);
                 laser.object.rotation.copy(rotation);
                 laser.object.position.copy(this.parent.position.clone().add(dir.multiplyScalar(2)));
+                if (this.parentComponent != null) {
+                    laser.shipId = this.parentComponent.id;
+                }
                 this.addComponent(laser);
                 this.fireAmount = 0;
                 this.fireSpot = (this.fireSpot + 1) % this.spots.length;

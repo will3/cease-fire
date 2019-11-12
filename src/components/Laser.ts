@@ -16,6 +16,7 @@ export default class Laser extends Component {
     public offset: number[] = [0, 1.2, 2.4, 3.6];
     public baseScale = 1.5;
     public timeToLive = 3;
+    public shipId?: string;
     private life = 0;
     private sprites: Object3D[] = [];
 
@@ -65,15 +66,17 @@ export default class Laser extends Component {
     }
 
     private getCollidableObjects() {
-        const chunkMeshes = _(this.findComponents("ChunkMesh") as ChunkMesh[]).map((c) => c.mesh).value();
-        const asteroids = _(this.findComponents("Asteroid") as Asteroid[]).map((c) => c.mesh).value();
+        const chunkMeshes = _(this.runner.getComponents("ChunkMesh") as ChunkMesh[]).map((c) => c.mesh).value();
+        const asteroids = _(this.runner.getComponents("Asteroid") as Asteroid[]).map((c) => c.mesh).value();
 
-        return chunkMeshes.concat(asteroids).filter((o) => o != null);
+        return chunkMeshes.concat(asteroids).filter((o) => o != null).filter((o) => {
+            return o.userData.shipId !== this.shipId;
+        });
     }
 
     private updateCollision() {
         const objects = this.getCollidableObjects();
-        const dir = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
+        const dir = new Vector3(0, 0, -1).applyEuler(this.object.rotation)
         const up = new Vector3(0, 1, 0);
         const right = dir.clone().cross(up);
         const result = this.raycast(dir, objects, new Vector3()) ||
@@ -100,7 +103,7 @@ export default class Laser extends Component {
 
         const result = results[0];
         const componentId = result.object.userData.componentId;
-        const component = this.getComponent(componentId);
+        const component = this.runner.getComponent(componentId);
 
         if (component == null) {
             return undefined;

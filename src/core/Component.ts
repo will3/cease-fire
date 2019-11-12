@@ -1,8 +1,8 @@
 import { Camera, Clock, Object3D, Scene } from "three";
 import guid from "uuid/v4";
 
-import Physics from "./Physics";
 import { Input } from "./Input";
+import Physics from "./Physics";
 import Runner from "./Runner";
 import { Time } from "./Time";
 
@@ -28,6 +28,7 @@ export default class Component {
     public ownerId?: string;
     public id = guid();
     public readonly children: Component[] = [];
+    public parentComponent?: Component;
 
     public startIfNeeded() {
         if (this.started) {
@@ -65,16 +66,23 @@ export default class Component {
 
     public addComponent(component: Component, isChild: boolean = false) {
         this.runner.addComponent(component);
+        component.parentComponent = this;
         if (isChild) {
             this.children.push(component);
         }
     }
 
-    public findComponents(type: string) {
-        return this.runner.findComponents(type);
+    public getComponents(type: string) {
+        if (this.parentComponent == null) {
+            return undefined;
+        }
+        return this.parentComponent.children.filter((c) => c.type === type);
     }
 
-    public getComponent(id: string) {
-        return this.runner.getComponent(id);
+    public getComponent(type: string) {
+        if (this.parentComponent == null) {
+            return undefined;
+        }
+        return this.parentComponent.children.find((c) => c.type === type);
     }
 }

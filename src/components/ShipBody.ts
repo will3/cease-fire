@@ -40,7 +40,10 @@ export default class ShipBody extends Component implements Hitable {
         this.object.add(this.pivot);
         this.pivot.add(this.inner);
         this.inner.position.copy(this.center.clone().multiplyScalar(-1));
-        this.chunkMesh.mesh.userData = { componentId: this.id };
+        this.chunkMesh.mesh.userData = {
+            componentId: this.id,
+            shipId: this.parentComponent == null ? undefined : this.parentComponent.id,
+        };
 
         if (this.onRadiusUpdated != null) {
             this.onRadiusUpdated(calcBoundingSphere(this.chunk).radius);

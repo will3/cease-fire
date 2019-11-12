@@ -51,7 +51,7 @@ export default class Runner {
         return this.components[id];
     }
 
-    public findComponents(type: string) {
+    public getComponents(type: string) {
         return _(this.components).filter((c) => c.type === type).value();
     }
 
