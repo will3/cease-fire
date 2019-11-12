@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Camera, Scene } from "three";
-import Physics from "./Collisions";
+import Physics from "./Physics";
 import Component from "./Component";
 import ComponentFactory from "./ComponentFactory";
 import ComponentState from "./ComponentState";
@@ -15,7 +15,7 @@ export default class Runner {
     private componentFactory: ComponentFactory;
     private input: Input;
     private camera: Camera;
-    private collisions: Physics;
+    private physics: Physics;
 
     private time = {
         deltaTime: 1 / defaultFrameRate,
@@ -27,7 +27,7 @@ export default class Runner {
         this.input = options.input!;
         this.componentFactory = options.componentFactory!;
         this.camera = options.camera!;
-        this.collisions = options.collisions!;
+        this.physics = options.physics!;
     }
 
     public restoreComponent(state: ComponentState) {
@@ -72,7 +72,7 @@ export default class Runner {
         component.time = this.time;
         component.input = this.input;
         component.camera = this.camera;
-        component.collisions = this.collisions;
+        component.physics = this.physics;
     }
 
     public update(dt: number) {

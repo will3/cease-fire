@@ -2,7 +2,7 @@ import { Object3D, Vector3 } from "three";
 
 import _ from "lodash";
 import Collider from "../core/Collider";
-import { Contact } from "../core/Collisions";
+import { Contact } from "../core/Physics";
 import Component from "../core/Component";
 import ChunkMesh from "./ChunkMesh";
 import EngineParticles from "./EngineParticles";

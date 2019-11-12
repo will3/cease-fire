@@ -1,5 +1,5 @@
 import { Camera, Clock, Scene } from "three";
-import Physics from "./Collisions";
+import Physics from "./Physics";
 import ComponentFactory from "./ComponentFactory";
 import { Input } from "./Input";
 
@@ -9,5 +9,5 @@ export interface RunnerOptions {
     clock?: Clock;
     componentFactory?: ComponentFactory;
     camera?: Camera;
-    collisions?: Physics;
+    physics?: Physics;
 }

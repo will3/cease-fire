@@ -1,7 +1,7 @@
 import { Camera, Clock, Object3D, Scene } from "three";
 import guid from "uuid/v4";
 
-import Physics from "./Collisions";
+import Physics from "./Physics";
 import { Input } from "./Input";
 import Runner from "./Runner";
 import { Time } from "./Time";
@@ -16,7 +16,7 @@ export default class Component {
     public runner!: Runner;
     public time!: Time;
     public camera!: Camera;
-    public collisions!: Physics;
+    public physics!: Physics;
 
     public shouldDestroy = false;
     public started = false;

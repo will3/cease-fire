@@ -2,7 +2,7 @@ import _ from "lodash";
 import { Vector3 } from "three";
 import Collider from "./Collider";
 
-export default class Collisions {
+export default class Physics {
     private map: { [id: string]: Collider } = {};
 
     public add(body: Collider) {

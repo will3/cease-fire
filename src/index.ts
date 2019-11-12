@@ -27,7 +27,7 @@ import StarField from "./components/StarField";
 import { Input } from "./core/Input";
 import Runner from "./core/Runner";
 import createClient from "./networking/Client";
-import Physics from "./core/Collisions";
+import Physics from "./core/Physics";
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -81,7 +81,7 @@ window.addEventListener("resize", () => {
 const input = new Input();
 
 function animate() {
-    collisions.update();
+    physics.update();
     runner.update(1 / 60);
     runner.beforeRender();
 
@@ -92,8 +92,8 @@ function animate() {
     runner.lateUpdate();
 }
 
-const collisions = new Physics();
-const runner = new Runner({ scene, input, componentFactory, camera, collisions });
+const physics = new Physics();
+const runner = new Runner({ scene, input, componentFactory, camera, physics });
 
 const cameraController = new CameraController();
 cameraController.camera = camera;
