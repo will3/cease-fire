@@ -14,6 +14,7 @@ import { Hitable } from "../Hitable";
 import { randomAxis, randomQuaternion } from "../math";
 import Noise from "../Noise";
 import Explosion from "./Explosion";
+import Collider from "../core/Collider";
 
 export default class Asteroid extends Component implements Hitable {
     private static material: Material;
@@ -55,6 +56,14 @@ export default class Asteroid extends Component implements Hitable {
 
         const mass = Math.pow(this.object.scale.x * this.object.scale.y * this.object.scale.z, 0.5);
         this.quatVelocity = new Quaternion().setFromAxisAngle(randomAxis(), 0.05 / mass * Math.random());
+
+        const collider = new Collider();
+        collider.static = true;
+        this.mesh.geometry.computeBoundingSphere();
+        const sphere = this.mesh.geometry.boundingSphere;
+        collider.radius = sphere.radius;
+        collider.position.copy(this.object.position);
+        this.addComponent(collider, true);
     }
 
     public update() {

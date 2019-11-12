@@ -1,6 +1,8 @@
 import { Object3D, Vector3 } from "three";
 
 import _ from "lodash";
+import Collider from "../core/Collider";
+import { Contact } from "../core/Collisions";
 import Component from "../core/Component";
 import ChunkMesh from "./ChunkMesh";
 import EngineParticles from "./EngineParticles";
@@ -15,6 +17,7 @@ export default class Ship extends Component {
     public isRemote = true;
     public body!: ShipBody;
     public object = new Object3D();
+    public collider!: Collider;
 
     public start() {
         this.body = new ShipBody();
@@ -47,6 +50,21 @@ export default class Ship extends Component {
         rigidBody.object = this.object;
         this.addComponent(rigidBody, true);
 
+        this.collider = new Collider();
+        this.addComponent(this.collider, true);
+        this.body.onRadiusUpdated = (r) => {
+            this.collider.radius = r;
+        };
+        this.collider.onContact = (contact: Contact) => {
+            if (this.body.mass === 0) {
+                return;
+            }
+
+            // this.object.position.add(contact.force);
+            rigidBody.velocity.add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(1));
+            rigidBody.velocity.multiplyScalar(0.8);
+        };
+
         if (!this.isServer) {
             const left = new EngineParticles();
             left.parent = leftEngine;
@@ -67,6 +85,10 @@ export default class Ship extends Component {
         }
 
         this.parent.add(this.object);
+    }
+
+    public update() {
+        this.collider.position.copy(this.object.position);
     }
 
     public onDestroy() {

@@ -1,15 +1,18 @@
 import _ from "lodash";
-import { Color, Intersection, Object3D, Quaternion, Vector3 } from "three";
+import { Color, Intersection, Object3D, Quaternion, Sphere, Vector3 } from "three";
+import Collider from "../core/Collider";
 import Component from "../core/Component";
 import { Hitable } from "../Hitable";
 import { getMaterial } from "../materials";
 import { clamp } from "../math";
 import ValueCurve from "../ValueCurve";
 import Chunk from "../voxel/Chunk";
-import { calcCenter, countVoxels } from "../voxel/utils";
+import { calcBoundingSphere, calcCenter, countVoxels } from "../voxel/utils";
 import ChunkMesh from "./ChunkMesh";
 import Piece from "./Piece";
 import Ship from "./Ship";
+
+type onRadiusUpdatedCallback = (radius: number) => void;
 
 export default class ShipBody extends Component implements Hitable {
     public inner = new Object3D();
@@ -19,6 +22,7 @@ export default class ShipBody extends Component implements Hitable {
     public ship!: Ship;
     public readonly center = new Vector3();
     public mass = 0;
+    public onRadiusUpdated?: onRadiusUpdatedCallback;
 
     private object = new Object3D();
     private damageColor = new Color();
@@ -37,6 +41,10 @@ export default class ShipBody extends Component implements Hitable {
         this.pivot.add(this.inner);
         this.inner.position.copy(this.center.clone().multiplyScalar(-1));
         this.chunkMesh.mesh.userData = { componentId: this.id };
+
+        if (this.onRadiusUpdated != null) {
+            this.onRadiusUpdated(calcBoundingSphere(this.chunk).radius);
+        }
     }
 
     public update() {

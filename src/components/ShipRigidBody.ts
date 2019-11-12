@@ -1,4 +1,5 @@
-import { Vector3, Object3D } from "three";
+import { Object3D, Vector3 } from "three";
+import Collider from "../core/Collider";
 import Component from "../core/Component";
 
 export default class ShipRigidBody extends Component {
