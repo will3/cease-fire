@@ -11,6 +11,7 @@ import { calcBoundingSphere, calcCenter, countVoxels } from "../voxel/utils";
 import ChunkMesh from "./ChunkMesh";
 import Piece from "./Piece";
 import Ship from "./Ship";
+import ShipCutter from "./ShipCutter";
 
 type onRadiusUpdatedCallback = (radius: number) => void;
 
@@ -27,6 +28,8 @@ export default class ShipBody extends Component implements Hitable {
     private object = new Object3D();
     private damageColor = new Color();
     private massDirty = true;
+    private totalHp = 0;
+    private hp = 0;
 
     public start() {
         this.damageColor = this.color.clone().multiplyScalar(0.4);
@@ -48,6 +51,8 @@ export default class ShipBody extends Component implements Hitable {
         if (this.onRadiusUpdated != null) {
             this.onRadiusUpdated(calcBoundingSphere(this.chunk).radius);
         }
+
+        this.totalHp = countVoxels(this.chunkMesh.chunk);
     }
 
     public update() {
@@ -86,6 +91,13 @@ export default class ShipBody extends Component implements Hitable {
                 this.massDirty = true;
                 this.chunk.setColor(dc.x, dc.y, dc.z, this.damageColor.clone().lerp(this.color, v));
             }
+        }
+
+        this.hp = countVoxels(this.chunk);
+
+        if (this.hp / this.totalHp < 0.8) {
+            const shipCutter = this.getComponent("ShipCutter") as ShipCutter;
+            shipCutter.testCut();
         }
     }
 

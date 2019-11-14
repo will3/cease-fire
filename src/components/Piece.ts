@@ -8,7 +8,7 @@ export default class Piece extends Component {
     public readonly object = new Object3D();
     public rotationSpeed = new Quaternion();
     public velocity = new Vector3();
-    public timeToLive = 10;
+    public timeToLive = 2;
     private life = 0;
     private readonly inner = new Object3D();
 

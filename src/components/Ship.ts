@@ -1,4 +1,4 @@
-import { Object3D, Vector3 } from "three";
+import { Object3D, Vector3, Color } from "three";
 
 import _ from "lodash";
 import Collider from "../core/Collider";
@@ -18,11 +18,13 @@ export default class Ship extends Component {
     public body!: ShipBody;
     public object = new Object3D();
     public collider!: Collider;
+    public color = new Color(0.2, 0.6, 0.8);
 
     public start() {
         this.body = new ShipBody();
         this.body.parent = this.object;
         this.body.ship = this;
+        this.body.color.copy(this.color);
         this.addComponent(this.body, true);
 
         const leftEngine = new Object3D();
@@ -60,9 +62,12 @@ export default class Ship extends Component {
                 return;
             }
 
-            // this.object.position.add(contact.force);
-            rigidBody.velocity.add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(1));
-            rigidBody.velocity.multiplyScalar(0.8);
+            if (contact.collider.static) {
+                rigidBody.velocity.add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(1));
+                rigidBody.velocity.multiplyScalar(0.8);
+            } else {
+                rigidBody.velocity.add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(0.2));
+            }
         };
 
         if (!this.isServer) {

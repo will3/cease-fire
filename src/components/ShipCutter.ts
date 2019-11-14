@@ -9,6 +9,7 @@ export interface CutResult { [hash: string]: Vector3[]; }
 
 export default class ShipCutter extends Component {
     public shipBody!: ShipBody;
+    public type = "ShipCutter";
 
     public update() {
         if (this.input.keydown("c")) {
@@ -45,7 +46,7 @@ export default class ShipCutter extends Component {
         return results;
     }
 
-    private testCut() {
+    public testCut() {
         const bounds = calcBounds(this.shipBody.chunk);
         const count = 3;
         const planes = [];
@@ -78,7 +79,7 @@ export default class ShipCutter extends Component {
             const dir = vectors[index];
             const piece = this.shipBody.createPiece(group);
 
-            const mass = piece.calcMass();
+            const mass = Math.sqrt(piece.calcMass());
             const rotationInertia = mass * mass;
             piece.rotationSpeed = randomQuaternion(Math.pow(random(0.5, 1), 2) * 2 / rotationInertia);
             piece.velocity = dir.multiplyScalar(random(0.5, 1) * 0.4 / mass);

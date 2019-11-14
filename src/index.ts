@@ -25,13 +25,16 @@ import CameraController from "./components/CameraController";
 import Ship from "./components/Ship";
 import StarField from "./components/StarField";
 import { Input } from "./core/Input";
+import Physics from "./core/Physics";
 import Runner from "./core/Runner";
 import createClient from "./networking/Client";
-import Physics from "./core/Physics";
+import Stats from "stats.js";
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new WebGLRenderer();
+renderer.gammaFactor = 1.5;
+renderer.gammaOutput = true;
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 const main = document.getElementById("main")!;
@@ -80,16 +83,22 @@ window.addEventListener("resize", () => {
 
 const input = new Input();
 
+const stats = new Stats();
+document.body.appendChild(stats.dom);
+
 function animate() {
+    stats.begin();
     physics.update();
     runner.update(1 / 60);
     runner.beforeRender();
 
     composer.render();
 
-    requestAnimationFrame(animate);
     input.clear();
     runner.lateUpdate();
+    stats.end();
+
+    requestAnimationFrame(animate);
 }
 
 const physics = new Physics();
@@ -107,6 +116,17 @@ ship.ownerId = playerId;
 ship.isOwn = true;
 runner.addComponent(ship);
 
+for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+        const ship = new Ship();
+        runner.addComponent(ship);
+        ship.object.position.set(i * 15, 0, j * 15);
+        ship.object.rotation.y = Math.random() * 2 * Math.PI;
+        ship.color = new Color(0.8, 0.6, 0.2);
+        // public color = new Color(0.2, 0.6, 0.8);
+    }
+}
+
 const numGrids = new Vector2(20, 20);
 const gridSize = 10;
 const center = new Vector3(numGrids.x * gridSize * 0.5, 0, numGrids.y * gridSize * 0.5);
@@ -122,10 +142,6 @@ const client = createClient({
 
 client.join(playerId);
 client.spawn(ship);
-
-const enemyShip = new Ship();
-runner.addComponent(enemyShip);
-placeShip(enemyShip);
 
 cameraController.target = ship.object;
 

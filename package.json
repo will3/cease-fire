@@ -16,6 +16,7 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
+    "@types/stats.js": "^0.17.0",
     "dat.gui": "^0.7.6",
     "express": "^4.17.1",
     "keycode": "^2.2.0",
@@ -25,6 +26,7 @@
     "simplex-noise": "^2.4.0",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
+    "stats.js": "^0.17.0",
     "three": "^0.110.0",
     "three.proton.js": "^0.1.5",
     "uuid": "^3.3.3",
