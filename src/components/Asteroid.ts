@@ -9,12 +9,11 @@ import {
     Quaternion,
     Vector2,
 } from "three";
+import Collider from "../core/Collider";
 import Component from "../core/Component";
 import { Hitable } from "../Hitable";
 import { randomAxis, randomQuaternion } from "../math";
 import Noise from "../Noise";
-import Explosion from "./Explosion";
-import Collider from "../core/Collider";
 
 export default class Asteroid extends Component implements Hitable {
     private static material: Material;

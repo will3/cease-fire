@@ -1,7 +1,7 @@
 import { Object3D, Vector3 } from "three";
 import guid from "uuid/v4";
-import { Contact } from "./Physics";
 import Component from "./Component";
+import { Contact } from "./Physics";
 
 type onContactCallback = (contact: Contact) => void;
 

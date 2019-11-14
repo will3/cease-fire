@@ -1,13 +1,20 @@
 import _ from "lodash";
 import { Camera, Scene } from "three";
-import Physics from "./Physics";
 import Component from "./Component";
 import ComponentFactory from "./ComponentFactory";
 import ComponentState from "./ComponentState";
 import { Input } from "./Input";
-import { RunnerOptions } from "./RunnerOptions";
+import Physics from "./Physics";
 
 const defaultFrameRate = 60;
+
+export interface RunnerOptions {
+    scene: Scene;
+    input?: Input;
+    componentFactory?: ComponentFactory;
+    camera?: Camera;
+    physics?: Physics;
+}
 
 export default class Runner {
     public components: { [id: string]: Component } = {};

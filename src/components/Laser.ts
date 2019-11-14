@@ -76,7 +76,7 @@ export default class Laser extends Component {
 
     private updateCollision() {
         const objects = this.getCollidableObjects();
-        const dir = new Vector3(0, 0, -1).applyEuler(this.object.rotation)
+        const dir = new Vector3(0, 0, -1).applyEuler(this.object.rotation);
         const up = new Vector3(0, 1, 0);
         const right = dir.clone().cross(up);
         const result = this.raycast(dir, objects, new Vector3()) ||

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Vector3, Sphere } from "three";
+import { Sphere, Vector3 } from "three";
 import Chunk from "./Chunk";
 
 export const calcCenter = (chunk: Chunk) => {

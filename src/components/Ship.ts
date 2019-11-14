@@ -1,9 +1,9 @@
-import { Object3D, Vector3, Color } from "three";
+import { Color, Object3D, Vector3 } from "three";
 
 import _ from "lodash";
 import Collider from "../core/Collider";
-import { Contact } from "../core/Physics";
 import Component from "../core/Component";
+import { Contact } from "../core/Physics";
 import ChunkMesh from "./ChunkMesh";
 import EngineParticles from "./EngineParticles";
 import ShipBody from "./ShipBody";

@@ -8,6 +8,7 @@ import {
     // @ts-ignore
 } from "postprocessing";
 import SocketIOClient from "socket.io-client";
+import Stats from "stats.js";
 import {
     AmbientLight,
     Color,
@@ -28,7 +29,6 @@ import { Input } from "./core/Input";
 import Physics from "./core/Physics";
 import Runner from "./core/Runner";
 import createClient from "./networking/Client";
-import Stats from "stats.js";
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -118,11 +118,11 @@ runner.addComponent(ship);
 
 for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 4; j++) {
-        const ship = new Ship();
-        runner.addComponent(ship);
-        ship.object.position.set(i * 15, 0, j * 15);
-        ship.object.rotation.y = Math.random() * 2 * Math.PI;
-        ship.color = new Color(0.8, 0.6, 0.2);
+        const s = new Ship();
+        runner.addComponent(s);
+        s.object.position.set(i * 15, 0, j * 15);
+        s.object.rotation.y = Math.random() * 2 * Math.PI;
+        s.color = new Color(0.8, 0.6, 0.2);
         // public color = new Color(0.2, 0.6, 0.8);
     }
 }
