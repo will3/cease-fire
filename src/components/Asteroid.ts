@@ -21,6 +21,7 @@ interface AsteroidData {
     seed: string;
     startPosition: Vector3;
     startScale: Vector3;
+    quaternion: number[];
 }
 
 export default class Asteroid extends Component implements Hitable {
@@ -99,11 +100,12 @@ export default class Asteroid extends Component implements Hitable {
         // do nothing
     }
 
-    public serialize() {
+    public serialize(): AsteroidData {
         return {
             seed: this.seed,
             startPosition: this.startPosition,
             startScale: this.startScale,
+            quaternion: this.object.quaternion.toArray(),
         };
     }
 
@@ -111,5 +113,6 @@ export default class Asteroid extends Component implements Hitable {
         this.seed = data.seed;
         this.startPosition.copy(data.startPosition);
         this.startScale.copy(data.startScale);
+        this.object.quaternion.fromArray(data.quaternion);
     }
 }
