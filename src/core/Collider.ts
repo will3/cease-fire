@@ -1,5 +1,5 @@
 import { Object3D, Vector3 } from "three";
-import guid from "uuid/v4";
+import guid from "../guid";
 import Component from "./Component";
 import { Contact } from "./Physics";
 

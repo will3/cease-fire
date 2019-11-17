@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Camera, Scene } from "three";
-import guid from "uuid/v4";
+import guid from "../guid";
 import Client from "../networking/Client";
 import Component from "./Component";
 import ComponentFactory from "./ComponentFactory";
@@ -76,11 +76,7 @@ export default class Runner {
 
     public addComponent(component: Component) {
         if (component.isRemote) {
-            console.log("add", {
-                id: component.id,
-                type: component.type,
-                isRemote: component.isRemote,
-            });
+            console.log(`add ${this.formatComponent(component)}`);
         }
 
         this.components[component.id] = component;
@@ -89,11 +85,7 @@ export default class Runner {
 
     public destroyComponent(component: Component) {
         if (component.isRemote) {
-            console.log("destroy", {
-                id: component.id,
-                type: component.type,
-                isRemote: component.isRemote,
-            });
+            console.log(`destroy ${this.formatComponent(component)}`);
         }
 
         if (component.destroyByClient) {
@@ -151,5 +143,10 @@ export default class Runner {
         _.forEach(this.components, (component) => {
             component.beforeRender();
         });
+    }
+
+    private formatComponent(component: Component) {
+        const parts = [component.type, component.id];
+        return parts.join(" ");
     }
 }

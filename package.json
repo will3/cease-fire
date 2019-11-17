@@ -17,6 +17,7 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
+    "@types/shortid": "^0.0.29",
     "@types/stats.js": "^0.17.0",
     "dat.gui": "^0.7.6",
     "express": "^4.17.1",
@@ -25,6 +26,7 @@
     "postprocessing": "^6.8.8",
     "seedrandom": "^3.0.5",
     "shader-particle-engine": "^1.0.6",
+    "shortid": "^2.2.15",
     "simplex-noise": "^2.4.0",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",

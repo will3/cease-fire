@@ -1,5 +1,5 @@
 import { Camera, Clock, Object3D, Scene } from "three";
-import guid from "uuid/v4";
+import guid from "../guid";
 
 import { Command } from "../networking/common";
 import { Input } from "./Input";

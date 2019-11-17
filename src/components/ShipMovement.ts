@@ -6,7 +6,7 @@ import { Command } from "../networking/common";
 export default class ShipMovement extends Component {
     public object!: Object3D;
 
-    public maxRoll = Math.PI / 5;
+    public maxRoll = Math.PI / 7;
     public rotationVelocity = new Vector3();
     public velocity = new Vector3();
     public rotationAcc = new Vector3(0, 0, 2);

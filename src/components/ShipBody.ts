@@ -90,43 +90,6 @@ export default class ShipBody extends Component implements Hitable {
         }
     }
 
-    private applyDamages() {
-        this.damages.forEach((damage, index) => {
-            if (this.damagesApplied[index]) {
-                return;
-            }
-
-            this.applyDamage(damage);
-            this.damagesApplied[index] = true;
-        });
-    }
-
-    private applyDamage(damage: Damage) {
-        const pattern = spherePattern(2, new ValueCurve([0.5, 0.25], [0, 1]));
-
-        for (const p of pattern) {
-            const dc = new Vector3(p[0], p[1], p[2]).add(damage.coord);
-            if (this.chunk.inBound(dc.x, dc.y, dc.z)) {
-                let v = this.chunk.get(dc.x, dc.y, dc.z);
-                if (v <= 0) {
-                    continue;
-                }
-                v -= p[3];
-                v = clamp(v, 0, 1);
-                this.chunk.set(dc.x, dc.y, dc.z, v);
-                this.massDirty = true;
-                this.chunk.setColor(dc.x, dc.y, dc.z, this.damageColor.clone().lerp(this.color, v));
-            }
-        }
-
-        this.hp = countVoxels(this.chunk);
-
-        if (this.hp / this.totalHp < 0.5) {
-            const shipCutter = this.getComponent("ShipCutter") as ShipCutter;
-            shipCutter.testCut();
-        }
-    }
-
     public createPiece(coords: Vector3[]) {
         const piece = new Piece();
 
@@ -153,6 +116,43 @@ export default class ShipBody extends Component implements Hitable {
 
     get chunk() {
         return this.chunkMesh.chunk;
+    }
+
+    private applyDamages() {
+        this.damages.forEach((damage, index) => {
+            if (this.damagesApplied[index]) {
+                return;
+            }
+
+            this.applyDamage(damage);
+            this.damagesApplied[index] = true;
+        });
+    }
+
+    private applyDamage(damage: Damage) {
+        const pattern = spherePattern(1.5, new ValueCurve([1.0, 0.25], [0, 1]));
+
+        for (const p of pattern) {
+            const dc = new Vector3(p[0], p[1], p[2]).add(damage.coord);
+            if (this.chunk.inBound(dc.x, dc.y, dc.z)) {
+                let v = this.chunk.get(dc.x, dc.y, dc.z);
+                if (v <= 0) {
+                    continue;
+                }
+                v -= p[3];
+                v = clamp(v, 0, 1);
+                this.chunk.set(dc.x, dc.y, dc.z, v);
+                this.massDirty = true;
+                this.chunk.setColor(dc.x, dc.y, dc.z, this.damageColor.clone().lerp(this.color, v));
+            }
+        }
+
+        this.hp = countVoxels(this.chunk);
+
+        if (this.hp / this.totalHp < 0.5) {
+            const shipCutter = this.getComponent("ShipCutter") as ShipCutter;
+            shipCutter.testCut();
+        }
     }
 }
 

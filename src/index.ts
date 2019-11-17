@@ -20,14 +20,13 @@ import {
     Vector3,
     WebGLRenderer,
 } from "three";
-import guid from "uuid/v4";
 import componentFactory from "./componentFactory";
-import AsteroidField from "./components/AsteroidField";
 import CameraController from "./components/CameraController";
 import Ship from "./components/Ship";
 import StarField from "./components/StarField";
 import { Input } from "./core/Input";
 import Runner from "./core/Runner";
+import guid from "./guid";
 import Client from "./networking/Client";
 
 const scene = new Scene();
