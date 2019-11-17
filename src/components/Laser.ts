@@ -78,9 +78,13 @@ export default class Laser extends Component {
         const result = this.updateCollision();
 
         if (result != null) {
-            const explosion = new Explosion();
-            explosion.object.position.copy(result.result.point);
-            this.addComponent(explosion);
+            console.log(this.isServer);
+            if (!this.isServer) {
+                const explosion = new Explosion();
+                explosion.object.position.copy(result.result.point);
+                this.addComponent(explosion);
+            }
+
             this.destroy();
             return;
         }

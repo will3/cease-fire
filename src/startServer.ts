@@ -1,9 +1,10 @@
 import express from "express";
 import http from "http";
 import SocketIO from "socket.io";
-import { Scene } from "three";
+import { Scene, Vector2, Vector3 } from "three";
 
 import componentFactory from "./componentFactory";
+import AsteroidField from "./components/AsteroidField";
 import Runner from "./core/Runner";
 import createServer from "./networking/Server";
 
@@ -16,6 +17,14 @@ app.use(express.static("dist"));
 const scene = new Scene();
 const runner = new Runner({ scene, componentFactory, isServer: true });
 
+const numGrids = new Vector2(20, 20);
+const gridSize = 10;
+
+const asteroidField = new AsteroidField();
+asteroidField.numGrids = numGrids;
+asteroidField.gridSize = gridSize;
+runner.addComponent(asteroidField);
+
 const dt = 1000 / 60;
 const server = createServer({
     componentFactory,
@@ -24,6 +33,7 @@ const server = createServer({
 });
 
 setInterval(() => {
+    scene.updateMatrixWorld();
     server.processCommands();
     runner.update(dt / 1000);
     server.emitClientStates();

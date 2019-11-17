@@ -11,11 +11,10 @@ export interface CutResult { [hash: string]: Vector3[]; }
 export default class ShipCutter extends Component {
     public shipBody!: ShipBody;
     public type = "ShipCutter";
-    public seed = "1337";
     private random!: seedrandom.prng;
 
     public start() {
-        this.random = seedrandom(this.seed);
+        this.random = seedrandom();
     }
 
     public cut(planes: Plane[]): CutResult {

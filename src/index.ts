@@ -130,8 +130,6 @@ const numGrids = new Vector2(20, 20);
 const gridSize = 10;
 const center = new Vector3(numGrids.x * gridSize * 0.5, 0, numGrids.y * gridSize * 0.5);
 
-const rng = seedrandom("1337");
-
 placeShip(ship);
 
 const socket = SocketIOClient("http://localhost:3000");
@@ -148,22 +146,17 @@ client.spawn(ship);
 
 cameraController.target = ship.object;
 
-const asteroidField = new AsteroidField();
-asteroidField.numGrids = numGrids;
-asteroidField.gridSize = gridSize;
-runner.addComponent(asteroidField);
-
 const starField = new StarField();
 runner.addComponent(starField);
 
 function placeShip(s: Ship) {
     const position = new Vector3(
-        (rng() - 0.5) * 2 * 40,
+        (Math.random() - 0.5) * 2 * 40,
         0,
-        (rng() - 0.5) * 2 * 40,
+        (Math.random() - 0.5) * 2 * 40,
     ).add(center);
     s.object.position.copy(position);
-    s.object.rotation.y = rng() * Math.PI * 2;
+    s.object.rotation.y = Math.random() * Math.PI * 2;
 }
 
 animate();

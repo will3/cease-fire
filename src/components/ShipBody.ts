@@ -14,6 +14,11 @@ import ShipCutter from "./ShipCutter";
 
 type onRadiusUpdatedCallback = (radius: number) => void;
 
+interface Damage {
+    coord: Vector3;
+    amount: number;
+};
+
 export default class ShipBody extends Component implements Hitable {
     public inner = new Object3D();
     public pivot = new Object3D();
@@ -70,15 +75,20 @@ export default class ShipBody extends Component implements Hitable {
     }
 
     public onHit(result: Intersection) {
-        const coord = this.chunkMesh.getCoord(result.faceIndex!);
-        this.damage(coord, 1);
+        if (this.isServer) {
+            const coord = this.chunkMesh.getCoord(result.faceIndex!);
+            this.applyDamage({
+                coord,
+                amount: 1,
+            });
+        }
     }
 
-    public damage(coord: Vector3, amount: number) {
+    private applyDamage(damage: Damage) {
         const pattern = spherePattern(3, new ValueCurve([1, 0.5], [0, 1]));
 
         for (const p of pattern) {
-            const dc = new Vector3(p[0], p[1], p[2]).add(coord);
+            const dc = new Vector3(p[0], p[1], p[2]).add(damage.coord);
             if (this.chunk.inBound(dc.x, dc.y, dc.z)) {
                 let v = this.chunk.get(dc.x, dc.y, dc.z);
                 if (v <= 0) {

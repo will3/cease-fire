@@ -47,7 +47,6 @@ export default class Runner {
     public restoreComponent(state: ComponentState) {
         const id = state.id;
         if (this.components[id] != null) {
-            // TODO update component
             const component = this.components[id];
             component.deserialize(state.state);
             return;
@@ -56,7 +55,6 @@ export default class Runner {
         console.log(`spawn ${JSON.stringify(state)}`);
         const component = this.componentFactory.create(state.type);
         this.injectDeps(component);
-        component.isServer = this.isServer;
         component.deserialize(state.state);
         component.id = state.id;
         component.ownerId = state.ownerId;
@@ -89,6 +87,7 @@ export default class Runner {
         component.input = this.input;
         component.camera = this.camera;
         component.physics = this.physics;
+        component.isServer = this.isServer;
     }
 
     public update(dt: number) {
@@ -112,6 +111,7 @@ export default class Runner {
                 c.onDestroy();
                 c.destroyed = true;
                 delete this.components[c.id];
+                console.log("destroyed", c.id, c.type);
             });
 
         this.time.deltaTime = dt;

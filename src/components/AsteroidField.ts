@@ -25,15 +25,16 @@ export default class AsteroidField extends Component {
 
                 if (v > 0) {
                     const asteroid = new Asteroid();
+                    asteroid.seed = this.random().toString();
                     asteroid.gridCoord = new Vector2(i, j);
                     const offset = randomAxis(this.random)
                         .setY(0)
                         .multiplyScalar(this.gridSize / 2);
-                    asteroid.object.position
+                    asteroid.startPosition
                         .set(i * this.gridSize, 0, j * this.gridSize)
                         .add(offset);
                     const scale = 2 + clamp(Math.pow(v, 1) * 20, 0, 6);
-                    asteroid.object.scale.set(scale, scale, scale);
+                    asteroid.startScale.set(scale, scale, scale);
 
                     const id = i + "," + j;
                     this.asteroids[id] = asteroid;
@@ -64,7 +65,7 @@ export default class AsteroidField extends Component {
                     .map((c) => getAsteroid(c))
                     .filter((n) => n != null)
                     .find((n) => {
-                        const dist = n.object.position.clone().sub(a.object.position).length();
+                        const dist = n.startPosition.clone().sub(a.startPosition).length();
                         return (a.radius + n.radius + 2) > dist;
                     });
 

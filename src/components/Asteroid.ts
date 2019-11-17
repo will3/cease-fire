@@ -9,6 +9,7 @@ import {
     Object3D,
     Quaternion,
     Vector2,
+    Vector3,
 } from "three";
 import Collider from "../core/Collider";
 import Component from "../core/Component";
@@ -16,23 +17,35 @@ import { Hitable } from "../Hitable";
 import { randomAxis, randomQuaternion } from "../math";
 import Noise from "../Noise";
 
+interface AsteroidData {
+    seed: string;
+    startPosition: Vector3;
+    startScale: Vector3;
+}
+
 export default class Asteroid extends Component implements Hitable {
     private static material: Material;
 
     public type = "Asteroid";
-    public object = new Object3D();
+    public isRemote = true;
     public gridCoord = new Vector2();
     public mesh = new Mesh();
     public seed = "1337";
-    private random!: seedrandom.prng;
+    public startPosition = new Vector3();
+    public startScale = new Vector3();
 
+    private random!: seedrandom.prng;
     private quatVelocity = new Quaternion();
     private noise = new Noise({
         frequency: 0.5,
         octaves: 2,
     });
+    private object = new Object3D();
 
     public start() {
+        this.object.position.copy(this.startPosition);
+        this.object.scale.copy(this.startScale);
+
         this.random = seedrandom(this.seed);
         this.parent.add(this.object);
         this.mesh.userData.componentId = this.id;
@@ -84,5 +97,19 @@ export default class Asteroid extends Component implements Hitable {
 
     public onHit(_: Intersection) {
         // do nothing
+    }
+
+    public serialize() {
+        return {
+            seed: this.seed,
+            startPosition: this.startPosition,
+            startScale: this.startScale,
+        };
+    }
+
+    public deserialize(data: AsteroidData) {
+        this.seed = data.seed;
+        this.startPosition.copy(data.startPosition);
+        this.startScale.copy(data.startScale);
     }
 }
