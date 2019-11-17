@@ -21,7 +21,8 @@ export default class Turrent extends Component {
         if (this.fire) {
             if (this.fireAmount > this.fireInterval) {
                 const laser = new Laser();
-                const rotation = new Euler(0, this.parent.rotation.y + (this.random() - 0.5) * 2.0 * 0.01, 0);
+                const rotationOffset = (this.random() - 0.5) * 2.0 * 0.01;
+                const rotation = new Euler(0, this.parent.rotation.y, 0);
                 const offset = this.spots[this.fireSpot];
                 const dir = offset.clone().applyEuler(rotation);
 

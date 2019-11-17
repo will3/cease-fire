@@ -112,7 +112,7 @@ const playerId = guid();
 
 const ship = new Ship();
 ship.ownerId = playerId;
-ship.isOwn = true;
+ship.isShadow = true;
 runner.addComponent(ship);
 
 // for (let i = 0; i < 4; i++) {
@@ -140,6 +140,7 @@ const client = new Client({
 });
 client.start();
 runner.client = client;
+runner.playerId = playerId;
 
 client.join(playerId);
 client.spawn(ship);

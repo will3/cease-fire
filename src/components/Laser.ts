@@ -78,7 +78,6 @@ export default class Laser extends Component {
         const result = this.updateCollision();
 
         if (result != null) {
-            console.log(this.isServer);
             if (!this.isServer) {
                 const explosion = new Explosion();
                 explosion.object.position.copy(result.result.point);

@@ -23,6 +23,7 @@ export default class Runner {
     public components: { [id: string]: Component } = {};
     public client!: Client;
     public id = guid();
+    public playerId?: string;
     private scene: Scene;
     private componentFactory: ComponentFactory;
     private input: Input;
@@ -48,6 +49,7 @@ export default class Runner {
         const id = state.id;
         if (this.components[id] != null) {
             const component = this.components[id];
+            component.isShadow = false;
             component.deserialize(state.state);
             return;
         }
@@ -111,7 +113,11 @@ export default class Runner {
                 c.onDestroy();
                 c.destroyed = true;
                 delete this.components[c.id];
-                console.log("destroyed", c.id, c.type);
+                console.log("destroyed", {
+                    id: c.id,
+                    type: c.type,
+                    isRemote: c.isRemote
+                });
             });
 
         this.time.deltaTime = dt;

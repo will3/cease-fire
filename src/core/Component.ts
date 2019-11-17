@@ -22,7 +22,9 @@ export default class Component {
     public shouldDestroy = false;
     public started = false;
     public destroyed = false;
-    public isOwn = false;
+    public get isOwn() {
+        return this.ownerId === this.runner.playerId;
+    }
 
     public isRemote = false;
     public isServer = false;
@@ -30,6 +32,7 @@ export default class Component {
     public id = guid();
     public readonly children: Component[] = [];
     public parentComponent?: Component;
+    public isShadow = false;
 
     public startIfNeeded() {
         if (this.started) {

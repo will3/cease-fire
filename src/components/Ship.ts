@@ -22,7 +22,7 @@ export default class Ship extends Component {
     public type = "Ship";
     public isRemote = true;
     public body!: ShipBody;
-    public object = new Object3D();
+    public readonly object = new Object3D();
     public collider!: Collider;
     public color = new Color(0.2, 0.6, 0.8);
 
@@ -113,7 +113,6 @@ export default class Ship extends Component {
     }
 
     public deserialize(data: IShipData) {
-        this.startIfNeeded();
         this.object.position.fromArray(data.position);
         this.object.rotation.fromArray(data.rotation);
 

@@ -88,8 +88,7 @@ export default (options: ServerOptions) => {
 
         if (command.componentId != null) {
             const component = runner.getComponent(command.componentId);
-            if (component != null) {
-                // console.log(`Execute command ${JSON.stringify(command)}`);
+            if (component != null && component.started) {
                 component.onCommand(command);
             }
         }

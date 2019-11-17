@@ -27,8 +27,8 @@ export default class Client {
             const ids = _(state.components).map((c) => c.id);
             _(this.runner.components)
                 .filter((c) => c.isRemote)
-                .filter((c) => !c.isOwn)
                 .filter((c) => !ids.includes(c.id))
+                .filter((c) => !c.isShadow)
                 .forEach((c) =>
                     c.destroy());
         });
