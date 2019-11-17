@@ -5,7 +5,7 @@ import Noise from "../Noise";
 
 export default class StarField extends Component {
     public object = new Object3D();
-    public number = 400;
+    public number = 1200;
 
     public start() {
         const noise = new Noise({

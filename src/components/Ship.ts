@@ -61,25 +61,9 @@ export default class Ship extends Component {
         this.movement.object = this.object;
         this.addComponent(this.movement, true);
 
-        this.collider = new Collider();
-        this.addComponent(this.collider, true);
-        this.body.onRadiusUpdated = (r) => {
-            this.collider.radius = r;
-        };
-        this.collider.onContact = (contact: Contact) => {
-            if (this.body.mass === 0) {
-                return;
-            }
-
-            if (contact.collider.static) {
-                this.movement.velocity
-                    .add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(1));
-                this.movement.velocity.multiplyScalar(0.8);
-            } else {
-                this.movement.velocity
-                    .add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(0.2));
-            }
-        };
+        if (this.isServer) {
+            this.initCollider();
+        }
 
         if (!this.isServer) {
             const leftEngine = new Object3D();
@@ -110,7 +94,9 @@ export default class Ship extends Component {
     }
 
     public update() {
-        this.collider.position.copy(this.object.position);
+        if (this.collider != null) {
+            this.collider.position.copy(this.object.position);
+        }
     }
 
     public onDestroy() {
@@ -149,7 +135,31 @@ export default class Ship extends Component {
             this.movement.updateCommand(command);
             this.engineParticleData.boost = command.data.boost;
             this.engineParticleData.forward = command.data.forward;
+
+            this.turrent.fire = command.data.fire;
         }
+    }
+
+    private initCollider() {
+        this.collider = new Collider();
+        this.addComponent(this.collider, true);
+        this.body.onRadiusUpdated = (r) => {
+            this.collider.radius = r;
+        };
+        this.collider.onContact = (contact: Contact) => {
+            if (this.body.mass === 0) {
+                return;
+            }
+
+            if (contact.collider.static) {
+                this.movement.velocity
+                    .add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(1));
+                this.movement.velocity.multiplyScalar(0.8);
+            } else {
+                this.movement.velocity
+                    .add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(0.2));
+            }
+        };
     }
 }
 

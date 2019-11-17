@@ -1,4 +1,4 @@
-import { Object3D, Raycaster, Sprite, SpriteMaterial, Vector3 } from "three";
+import { Object3D, Raycaster, Sprite, SpriteMaterial, Vector3, Euler } from "three";
 
 import _ from "lodash";
 import Component from "../core/Component";
@@ -8,8 +8,16 @@ import Asteroid from "./Asteroid";
 import ChunkMesh from "./ChunkMesh";
 import Explosion from "./Explosion";
 
+interface LaserState {
+    startPosition: number[];
+    startRotation: number[];
+    shipId: string;
+}
+
 export default class Laser extends Component {
     private static material: SpriteMaterial;
+    public type = "Laser";
+    public isRemote = true;
     public object = new Object3D();
     public velocity = 6;
     public scale: number[] = [2.0, 1, 0.8, 0.4];
@@ -17,6 +25,9 @@ export default class Laser extends Component {
     public baseScale = 1.5;
     public timeToLive = 3;
     public shipId?: string;
+    public startPosition = new Vector3();
+    public startRotation = new Euler();
+
     private life = 0;
     private sprites: Object3D[] = [];
 
@@ -38,6 +49,23 @@ export default class Laser extends Component {
 
         this.object.scale.multiplyScalar(this.baseScale);
         this.parent.add(this.object);
+
+        this.object.position.copy(this.startPosition);
+        this.object.rotation.copy(this.startRotation);
+    }
+
+    public serialize() {
+        return {
+            startPosition: this.startPosition.toArray(),
+            startRotation: this.startRotation.toArray(),
+            shipId: this.shipId,
+        };
+    }
+
+    public deserialize(state: LaserState) {
+        this.startPosition.fromArray(state.startPosition);
+        this.startRotation.fromArray(state.startRotation);
+        this.shipId = state.shipId;
     }
 
     public update() {

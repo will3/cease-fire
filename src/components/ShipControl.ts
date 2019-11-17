@@ -1,5 +1,4 @@
 import Component from "../core/Component";
-import { Command } from "../networking/common";
 import EngineParticles from "./EngineParticles";
 import Turrent from "./Turrent";
 
@@ -39,9 +38,5 @@ export default class ShipControl extends Component {
         };
 
         this.sendCommand(command);
-
-        if (this.turrent != null) {
-            this.turrent.updateCommand(command);
-        }
     }
 }

@@ -18,11 +18,14 @@ export default class Turrent extends Component {
                 const rotation = new Euler(0, this.parent.rotation.y + (Math.random() - 0.5) * 2.0 * 0.01, 0);
                 const offset = this.spots[this.fireSpot];
                 const dir = offset.clone().applyEuler(rotation);
-                laser.object.rotation.copy(rotation);
-                laser.object.position.copy(this.parent.position.clone().add(dir.multiplyScalar(2)));
+
+                laser.startPosition.copy(this.parent.position.clone().add(dir.multiplyScalar(2)));
+                laser.startRotation.copy(rotation);
+
                 if (this.parentComponent != null) {
                     laser.shipId = this.parentComponent.id;
                 }
+
                 this.addComponent(laser);
                 this.fireAmount = 0;
                 this.fireSpot = (this.fireSpot + 1) % this.spots.length;
@@ -30,9 +33,5 @@ export default class Turrent extends Component {
         }
 
         this.fireAmount += 1 / 60;
-    }
-
-    public updateCommand(command: Command) {
-        this.fire = command.data.fire;
     }
 }

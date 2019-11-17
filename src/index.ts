@@ -27,7 +27,6 @@ import Ship from "./components/Ship";
 import StarField from "./components/StarField";
 import { Input } from "./core/Input";
 import Runner from "./core/Runner";
-import createClient from "./networking/Client";
 import Client from "./networking/Client";
 
 const scene = new Scene();
@@ -35,6 +34,7 @@ const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight,
 const renderer = new WebGLRenderer();
 renderer.gammaFactor = 1.5;
 renderer.gammaOutput = true;
+renderer.setClearColor(new Color(0.05, 0.05, 0.05));
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 const main = document.getElementById("main")!;
