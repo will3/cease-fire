@@ -26,9 +26,9 @@ import CameraController from "./components/CameraController";
 import Ship from "./components/Ship";
 import StarField from "./components/StarField";
 import { Input } from "./core/Input";
-import Physics from "./core/Physics";
 import Runner from "./core/Runner";
 import createClient from "./networking/Client";
+import Client from "./networking/Client";
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -88,7 +88,6 @@ document.body.appendChild(stats.dom);
 
 function animate() {
     stats.begin();
-    physics.update();
     runner.update(1 / 60);
     runner.beforeRender();
 
@@ -101,8 +100,7 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-const physics = new Physics();
-const runner = new Runner({ scene, input, componentFactory, camera, physics });
+const runner = new Runner({ scene, input, componentFactory, camera, isServer: false });
 
 const cameraController = new CameraController();
 cameraController.camera = camera;
@@ -135,10 +133,11 @@ placeShip(ship);
 
 const socket = SocketIOClient("http://localhost:3000");
 
-const client = createClient({
+const client = new Client({
     runner,
     socket,
 });
+runner.client = client;
 
 client.join(playerId);
 client.spawn(ship);

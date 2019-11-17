@@ -11,12 +11,6 @@ export default class ShipCutter extends Component {
     public shipBody!: ShipBody;
     public type = "ShipCutter";
 
-    public update() {
-        if (this.input.keydown("c")) {
-            this.testCut();
-        }
-    }
-
     public cut(planes: Plane[]): CutResult {
         const map: { [id: string]: { coord: Vector3, results: number[] } } = {};
 

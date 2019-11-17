@@ -2,7 +2,7 @@ import _ from "lodash";
 import SocketIO from "socket.io";
 import ComponentFactory from "../core/ComponentFactory";
 import Runner from "../core/Runner";
-import { Command } from "./Client";
+import { Command } from "./common";
 import { getComponentState, State } from "./common";
 
 interface Connection {
@@ -19,7 +19,7 @@ export interface ServerOptions {
 export default (options: ServerOptions) => {
     const connections: { [id: string]: Connection } = {};
     const commandBuffer: Command[] = [];
-    const { io, runner, componentFactory } = options;
+    const { io, runner } = options;
 
     io.on("connection", (socket) => {
         const connection = {
@@ -83,6 +83,15 @@ export default (options: ServerOptions) => {
     const processCommand = (command: Command) => {
         if (command.type === "spawn") {
             runner.restoreComponent(command.data);
+            return;
+        }
+
+        if (command.componentId != null) {
+            const component = runner.getComponent(command.componentId);
+            if (component != null) {
+                // console.log(`Execute command ${JSON.stringify(command)}`);
+                component.onCommand(command);
+            }
         }
     };
 

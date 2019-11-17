@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { Euler, Vector3 } from "three";
 import Component from "../core/Component";
+import { Command } from "../networking/common";
 import Laser from "./Laser";
 
 export default class Turrent extends Component {
@@ -29,5 +30,9 @@ export default class Turrent extends Component {
         }
 
         this.fireAmount += 1 / 60;
+    }
+
+    public updateCommand(command: Command) {
+        this.fire = command.data.fire;
     }
 }

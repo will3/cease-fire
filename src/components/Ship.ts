@@ -4,13 +4,19 @@ import _ from "lodash";
 import Collider from "../core/Collider";
 import Component from "../core/Component";
 import { Contact } from "../core/Physics";
+import { Command } from "../networking/common";
 import ChunkMesh from "./ChunkMesh";
 import EngineParticles from "./EngineParticles";
 import ShipBody from "./ShipBody";
 import ShipControl from "./ShipControl";
 import ShipCutter from "./ShipCutter";
-import ShipRigidBody from "./ShipRigidBody";
+import ShipMovement from "./ShipMovement";
 import Turrent from "./Turrent";
+
+interface EngineParticleData {
+    forward: number;
+    boost: boolean;
+}
 
 export default class Ship extends Component {
     public type = "Ship";
@@ -20,6 +26,17 @@ export default class Ship extends Component {
     public collider!: Collider;
     public color = new Color(0.2, 0.6, 0.8);
 
+    private turrent!: Turrent;
+    private movement!: ShipMovement;
+    private shipControl!: ShipControl;
+    private leftEngineParticles!: EngineParticles;
+    private rightEngineParticles!: EngineParticles;
+
+    private engineParticleData: EngineParticleData = {
+        forward: 0,
+        boost: false,
+    };
+
     public start() {
         this.body = new ShipBody();
         this.body.parent = this.object;
@@ -27,17 +44,9 @@ export default class Ship extends Component {
         this.body.color.copy(this.color);
         this.addComponent(this.body, true);
 
-        const leftEngine = new Object3D();
-        const rightEngine = new Object3D();
-        this.body.inner.add(leftEngine);
-        this.body.inner.add(rightEngine);
-        const offset = new Vector3(1.5, 1.5, 2.5);
-        leftEngine.position.set(1, 0, 5).add(offset);
-        rightEngine.position.set(9, 0, 5).add(offset);
-
-        const turrent = new Turrent();
-        this.addComponent(turrent, true);
-        turrent.parent = this.object;
+        this.turrent = new Turrent();
+        this.addComponent(this.turrent, true);
+        this.turrent.parent = this.object;
 
         const chunkMesh = new ChunkMesh();
         chunkMesh.parent = this.body.inner;
@@ -48,9 +57,9 @@ export default class Ship extends Component {
         cutter.shipBody = this.body;
         this.addComponent(cutter, true);
 
-        const rigidBody = new ShipRigidBody();
-        rigidBody.object = this.object;
-        this.addComponent(rigidBody, true);
+        this.movement = new ShipMovement();
+        this.movement.object = this.object;
+        this.addComponent(this.movement, true);
 
         this.collider = new Collider();
         this.addComponent(this.collider, true);
@@ -63,29 +72,37 @@ export default class Ship extends Component {
             }
 
             if (contact.collider.static) {
-                rigidBody.velocity.add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(1));
-                rigidBody.velocity.multiplyScalar(0.8);
+                this.movement.velocity
+                    .add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(1));
+                this.movement.velocity.multiplyScalar(0.8);
             } else {
-                rigidBody.velocity.add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(0.2));
+                this.movement.velocity
+                    .add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(0.2));
             }
         };
 
         if (!this.isServer) {
-            const left = new EngineParticles();
-            left.parent = leftEngine;
-            this.addComponent(left, true);
+            const leftEngine = new Object3D();
+            const rightEngine = new Object3D();
+            this.body.inner.add(leftEngine);
+            this.body.inner.add(rightEngine);
+            const offset = new Vector3(1.5, 1.5, 2.5);
+            leftEngine.position.set(1, 0, 5).add(offset);
+            rightEngine.position.set(9, 0, 5).add(offset);
 
-            const right = new EngineParticles();
-            right.parent = rightEngine;
-            this.addComponent(right, true);
+            this.leftEngineParticles = new EngineParticles();
+            this.leftEngineParticles.parent = leftEngine;
+            this.addComponent(this.leftEngineParticles, true);
+
+            this.rightEngineParticles = new EngineParticles();
+            this.rightEngineParticles.parent = rightEngine;
+            this.addComponent(this.rightEngineParticles, true);
 
             if (this.isOwn) {
-                const shipControl = new ShipControl();
-                shipControl.rigidBody = rigidBody;
-                shipControl.leftEngine = left;
-                shipControl.rightEngine = right;
-                shipControl.turrent = turrent;
-                this.addComponent(shipControl, true);
+                this.shipControl = new ShipControl();
+                this.shipControl.shipId = this.id;
+                this.shipControl.turrent = this.turrent;
+                this.addComponent(this.shipControl, true);
             }
         }
 
@@ -105,6 +122,7 @@ export default class Ship extends Component {
         return {
             position: this.object.position.toArray(),
             rotation: this.object.rotation.toArray(),
+            engineParticleData: _.clone(this.engineParticleData),
         };
     }
 
@@ -112,10 +130,31 @@ export default class Ship extends Component {
         this.startIfNeeded();
         this.object.position.fromArray(data.position);
         this.object.rotation.fromArray(data.rotation);
+
+        this.engineParticleData = data.engineParticleData;
+
+        if (this.leftEngineParticles != null) {
+            this.leftEngineParticles.amount = this.engineParticleData.forward;
+            this.leftEngineParticles.boost = this.engineParticleData.boost;
+        }
+
+        if (this.rightEngineParticles != null) {
+            this.rightEngineParticles.amount = this.engineParticleData.forward;
+            this.rightEngineParticles.boost = this.engineParticleData.boost;
+        }
+    }
+
+    public onCommand(command: Command) {
+        if (command.type === "ShipMovement") {
+            this.movement.updateCommand(command);
+            this.engineParticleData.boost = command.data.boost;
+            this.engineParticleData.forward = command.data.forward;
+        }
     }
 }
 
 interface IShipData {
     position: number[];
     rotation: number[];
+    engineParticleData: EngineParticleData;
 }

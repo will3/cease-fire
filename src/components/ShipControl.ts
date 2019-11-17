@@ -1,14 +1,12 @@
-import { Vector3 } from "three";
 import Component from "../core/Component";
-import { clamp } from "../math";
+import { Command } from "../networking/common";
 import EngineParticles from "./EngineParticles";
-import ShipRigidBody from "./ShipRigidBody";
 import Turrent from "./Turrent";
 
 export default class ShipControl extends Component {
     public leftEngine!: EngineParticles;
     public rightEngine!: EngineParticles;
-    public rigidBody!: ShipRigidBody;
+    public shipId!: string;
 
     public turrent?: Turrent;
 
@@ -29,29 +27,21 @@ export default class ShipControl extends Component {
             forward = 1.0;
         }
 
-        this.leftEngine.amount = forward;
-        this.rightEngine.amount = forward;
-        this.leftEngine.boost = boost;
-        this.rightEngine.boost = boost;
+        const command = {
+            componentId: this.shipId,
+            type: "ShipMovement",
+            data: {
+                boost,
+                forward,
+                left,
+                fire,
+            },
+        };
 
-        this.rigidBody.boost = boost;
+        this.sendCommand(command);
 
         if (this.turrent != null) {
-            this.turrent.fire = fire;
+            this.turrent.updateCommand(command);
         }
-
-        this.rigidBody.engineRunning = forward > 0;
-
-        const rotation = this.rigidBody.object.rotation.clone();
-        const forwardVector = new Vector3(0, 0, -1).applyEuler(rotation);
-
-        const targetRoll = left * this.rigidBody.maxRoll;
-        const targetRollVelocity = (targetRoll - rotation.z) * 0.2;
-        const targetRollAcc = (targetRollVelocity - this.rigidBody.rotationVelocity.z);
-        const rollAcc = clamp(targetRollAcc, -this.rigidBody.rotationAcc.z, this.rigidBody.rotationAcc.z);
-        this.rigidBody.rotationVelocity.z += rollAcc;
-        const boostFactor = boost ? 2 : 1;
-        const acc = forwardVector.clone().multiplyScalar(this.rigidBody.acc * forward).multiplyScalar(boostFactor);
-        this.rigidBody.velocity.add(acc);
     }
 }

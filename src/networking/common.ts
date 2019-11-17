@@ -13,3 +13,9 @@ export const getComponentState = (component: Component): ComponentState => {
         type: component.type,
     };
 };
+
+export interface Command {
+    componentId: string;
+    data: any;
+    type: string;
+}

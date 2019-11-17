@@ -1,6 +1,7 @@
 import { Camera, Clock, Object3D, Scene } from "three";
 import guid from "uuid/v4";
 
+import { Command } from "../networking/common";
 import { Input } from "./Input";
 import Physics from "./Physics";
 import Runner from "./Runner";
@@ -41,6 +42,9 @@ export default class Component {
     public start() {
         // TODO override
     }
+    public sendCommand(command: Command) {
+        this.runner.client.sendCommand([command]);
+    }
     public update() {
         // TODO override
     }
@@ -57,6 +61,10 @@ export default class Component {
     }
 
     public lateUpdate() {
+        // TODO override
+    }
+
+    public onCommand(command: Command) {
         // TODO override
     }
 

@@ -1,5 +1,7 @@
 import _ from "lodash";
 import { Camera, Scene } from "three";
+import guid from "uuid/v4";
+import Client from "../networking/Client";
 import Component from "./Component";
 import ComponentFactory from "./ComponentFactory";
 import ComponentState from "./ComponentState";
@@ -14,15 +16,19 @@ export interface RunnerOptions {
     componentFactory?: ComponentFactory;
     camera?: Camera;
     physics?: Physics;
+    isServer: boolean;
 }
 
 export default class Runner {
     public components: { [id: string]: Component } = {};
+    public client!: Client;
+    public id = guid();
     private scene: Scene;
     private componentFactory: ComponentFactory;
     private input: Input;
     private camera: Camera;
     private physics: Physics;
+    private isServer: boolean;
 
     private time = {
         deltaTime: 1 / defaultFrameRate,
@@ -34,20 +40,23 @@ export default class Runner {
         this.input = options.input!;
         this.componentFactory = options.componentFactory!;
         this.camera = options.camera!;
-        this.physics = options.physics!;
+        this.physics = options.physics || new Physics();
+        this.isServer = options.isServer;
     }
 
     public restoreComponent(state: ComponentState) {
         const id = state.id;
         if (this.components[id] != null) {
             // TODO update component
+            const component = this.components[id];
+            component.deserialize(state.state);
             return;
         }
 
         console.log(`spawn ${JSON.stringify(state)}`);
         const component = this.componentFactory.create(state.type);
         this.injectDeps(component);
-        component.isServer = true;
+        component.isServer = this.isServer;
         component.deserialize(state.state);
         component.id = state.id;
         component.ownerId = state.ownerId;
@@ -83,6 +92,8 @@ export default class Runner {
     }
 
     public update(dt: number) {
+        this.physics.update();
+
         _.forEach(this.components, (component) => {
             component.startIfNeeded();
         });
