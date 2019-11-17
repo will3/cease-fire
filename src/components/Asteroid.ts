@@ -1,3 +1,4 @@
+import seedrandom from "seedrandom";
 import {
     Color,
     DodecahedronGeometry,
@@ -22,6 +23,8 @@ export default class Asteroid extends Component implements Hitable {
     public object = new Object3D();
     public gridCoord = new Vector2();
     public mesh = new Mesh();
+    public seed = "1337";
+    private random!: seedrandom.prng;
 
     private quatVelocity = new Quaternion();
     private noise = new Noise({
@@ -30,6 +33,7 @@ export default class Asteroid extends Component implements Hitable {
     });
 
     public start() {
+        this.random = seedrandom(this.seed);
         this.parent.add(this.object);
         this.mesh.userData.componentId = this.id;
 
@@ -44,17 +48,17 @@ export default class Asteroid extends Component implements Hitable {
         for (const vertice of this.mesh.geometry.vertices) {
             const v = this.noise.get(vertice.x, vertice.y, vertice.z);
             vertice.multiplyScalar(1.0 + v * 0.5);
-            vertice.x *= 1 + Math.random() * 0.61803398875;
+            vertice.x *= 1 + this.random() * 0.61803398875;
         }
 
         this.mesh.material = Asteroid.material;
 
-        this.mesh.quaternion.copy(randomQuaternion());
+        this.mesh.quaternion.copy(randomQuaternion(1, this.random));
 
         this.object.add(this.mesh);
 
         const mass = Math.pow(this.object.scale.x * this.object.scale.y * this.object.scale.z, 0.5);
-        this.quatVelocity = new Quaternion().setFromAxisAngle(randomAxis(), 0.05 / mass * Math.random());
+        this.quatVelocity = new Quaternion().setFromAxisAngle(randomAxis(this.random), 0.05 / mass * this.random());
 
         const collider = new Collider();
         collider.static = true;

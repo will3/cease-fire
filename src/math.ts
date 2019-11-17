@@ -1,3 +1,4 @@
+import seedrandom from "seedrandom";
 import { Quaternion, Vector3 } from "three";
 
 export const clamp = (v: number, min: number, max: number) => {
@@ -10,14 +11,14 @@ export const clamp = (v: number, min: number, max: number) => {
     return v;
 };
 
-export const random = (min: number, max: number) => {
-    return min + (max - min) * Math.random();
+export const random = (min: number, max: number, rng: seedrandom.prng) => {
+    return min + (max - min) * rng();
 };
 
-export const randomQuaternion = (mag: number = 1): Quaternion => {
+export const randomQuaternion = (mag: number, rng: seedrandom.prng): Quaternion => {
     if (mag !== 1) {
-        const angle = mag * Math.random() * 2 - mag;
-        return new Quaternion().setFromAxisAngle(randomAxis(), angle);
+        const angle = mag * rng() * 2 - mag;
+        return new Quaternion().setFromAxisAngle(randomAxis(rng), angle);
     }
     let x: number;
     let y: number;
@@ -26,22 +27,22 @@ export const randomQuaternion = (mag: number = 1): Quaternion => {
     let v: number;
     let w: number;
     let s: number;
-    do { x = random(-1, 1); y = random(-1, 1); z = x * x + y * y; } while (z > 1);
-    do { u = random(-1, 1); v = random(-1, 1); w = u * u + v * v; } while (w > 1);
+    do { x = random(-1, 1, rng); y = random(-1, 1, rng); z = x * x + y * y; } while (z > 1);
+    do { u = random(-1, 1, rng); v = random(-1, 1, rng); w = u * u + v * v; } while (w > 1);
     s = Math.sqrt((1 - z) / w);
     return new Quaternion(x, y, s * u, s * v);
 };
 
-export const randomAxis = () => {
-    return new Vector3(0, 0, 1).applyQuaternion(randomQuaternion());
+export const randomAxis = (rng: seedrandom.prng) => {
+    return new Vector3(0, 0, 1).applyQuaternion(randomQuaternion(1, rng));
 };
 
-export const randomUnitVector = () => {
-    return new Vector3(1, 0, 0).applyQuaternion(randomQuaternion());
+export const randomUnitVector = (rng: seedrandom.prng) => {
+    return new Vector3(1, 0, 0).applyQuaternion(randomQuaternion(1, rng));
 };
 
-export const randomSigned = () => {
-    return Math.random() > 0.5 ? 1 : -1;
+export const randomSigned = (rng: seedrandom.prng) => {
+    return rng() > 0.5 ? 1 : -1;
 };
 
 export const randomUniformUnitVectors = (points: Vector3[], numSimulations = 3) => {

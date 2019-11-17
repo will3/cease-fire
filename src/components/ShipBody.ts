@@ -1,6 +1,5 @@
 import _ from "lodash";
 import { Color, Intersection, Object3D, Quaternion, Sphere, Vector3 } from "three";
-import Collider from "../core/Collider";
 import Component from "../core/Component";
 import { Hitable } from "../Hitable";
 import { getMaterial } from "../materials";

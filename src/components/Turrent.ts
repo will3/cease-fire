@@ -1,21 +1,27 @@
 import _ from "lodash";
+import seedrandom from "seedrandom";
 import { Euler, Vector3 } from "three";
 import Component from "../core/Component";
-import { Command } from "../networking/common";
 import Laser from "./Laser";
 
 export default class Turrent extends Component {
     public spots = [new Vector3(-1, 0, -1), new Vector3(0, 0, -1), new Vector3(1, 0, -1)];
     public fire = false;
     public fireInterval = 0.1;
+    public seed = "1337";
     private fireAmount = 0;
     private fireSpot = 0;
+    private random!: seedrandom.prng;
+
+    public start() {
+        this.random = seedrandom(this.seed);
+    }
 
     public update() {
         if (this.fire) {
             if (this.fireAmount > this.fireInterval) {
                 const laser = new Laser();
-                const rotation = new Euler(0, this.parent.rotation.y + (Math.random() - 0.5) * 2.0 * 0.01, 0);
+                const rotation = new Euler(0, this.parent.rotation.y + (this.random() - 0.5) * 2.0 * 0.01, 0);
                 const offset = this.spots[this.fireSpot];
                 const dir = offset.clone().applyEuler(rotation);
 

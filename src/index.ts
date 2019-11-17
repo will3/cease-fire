@@ -7,6 +7,7 @@ import {
     RenderPass,
     // @ts-ignore
 } from "postprocessing";
+import seedrandom from "seedrandom";
 import SocketIOClient from "socket.io-client";
 import Stats from "stats.js";
 import {
@@ -114,20 +115,22 @@ ship.ownerId = playerId;
 ship.isOwn = true;
 runner.addComponent(ship);
 
-for (let i = 0; i < 4; i++) {
-    for (let j = 0; j < 4; j++) {
-        const s = new Ship();
-        runner.addComponent(s);
-        s.object.position.set(i * 15, 0, j * 15);
-        s.object.rotation.y = Math.random() * 2 * Math.PI;
-        s.color = new Color(0.8, 0.6, 0.2);
-        // public color = new Color(0.2, 0.6, 0.8);
-    }
-}
+// for (let i = 0; i < 4; i++) {
+//     for (let j = 0; j < 4; j++) {
+//         const s = new Ship();
+//         runner.addComponent(s);
+//         s.object.position.set(i * 15, 0, j * 15);
+//         s.object.rotation.y = Math.random() * 2 * Math.PI;
+//         s.color = new Color(0.8, 0.6, 0.2);
+//         // public color = new Color(0.2, 0.6, 0.8);
+//     }
+// }
 
 const numGrids = new Vector2(20, 20);
 const gridSize = 10;
 const center = new Vector3(numGrids.x * gridSize * 0.5, 0, numGrids.y * gridSize * 0.5);
+
+const rng = seedrandom("1337");
 
 placeShip(ship);
 
@@ -154,12 +157,12 @@ runner.addComponent(starField);
 
 function placeShip(s: Ship) {
     const position = new Vector3(
-        (Math.random() - 0.5) * 2 * 40,
+        (rng() - 0.5) * 2 * 40,
         0,
-        (Math.random() - 0.5) * 2 * 40,
+        (rng() - 0.5) * 2 * 40,
     ).add(center);
     s.object.position.copy(position);
-    s.object.rotation.y = Math.random() * Math.PI * 2;
+    s.object.rotation.y = rng() * Math.PI * 2;
 }
 
 animate();

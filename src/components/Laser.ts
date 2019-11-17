@@ -1,4 +1,4 @@
-import { Object3D, Raycaster, Sprite, SpriteMaterial, Vector3, Euler } from "three";
+import { Euler, Object3D, Raycaster, Sprite, SpriteMaterial, Vector3 } from "three";
 
 import _ from "lodash";
 import Component from "../core/Component";

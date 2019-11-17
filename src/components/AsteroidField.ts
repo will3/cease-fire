@@ -1,4 +1,5 @@
 import _ from "lodash";
+import seedrandom from "seedrandom";
 import { Vector2 } from "three";
 import Component from "../core/Component";
 import { clamp, randomAxis } from "../math";
@@ -8,9 +9,12 @@ import Asteroid from "./Asteroid";
 export default class AsteroidField extends Component {
     public numGrids!: Vector2;
     public gridSize!: number;
+    public seed = "1337";
     private asteroids: { [id: string]: Asteroid } = {};
+    private random!: seedrandom.prng;
 
     public start() {
+        this.random = seedrandom(this.seed);
         for (let i = 0; i < this.numGrids.x; i++) {
             for (let j = 0; j < this.numGrids.y; j++) {
                 const n = new Noise({
@@ -22,7 +26,7 @@ export default class AsteroidField extends Component {
                 if (v > 0) {
                     const asteroid = new Asteroid();
                     asteroid.gridCoord = new Vector2(i, j);
-                    const offset = randomAxis()
+                    const offset = randomAxis(this.random)
                         .setY(0)
                         .multiplyScalar(this.gridSize / 2);
                     asteroid.object.position

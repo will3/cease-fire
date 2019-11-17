@@ -1,4 +1,5 @@
 import _ from "lodash";
+import seedrandom from "seedrandom";
 import { Plane, Quaternion, Vector3 } from "three";
 import Component from "../core/Component";
 import { random, randomQuaternion, randomSigned, randomUniformUnitVectors } from "../math";
@@ -10,6 +11,12 @@ export interface CutResult { [hash: string]: Vector3[]; }
 export default class ShipCutter extends Component {
     public shipBody!: ShipBody;
     public type = "ShipCutter";
+    public seed = "1337";
+    private random!: seedrandom.prng;
+
+    public start() {
+        this.random = seedrandom(this.seed);
+    }
 
     public cut(planes: Plane[]): CutResult {
         const map: { [id: string]: { coord: Vector3, results: number[] } } = {};
@@ -75,16 +82,17 @@ export default class ShipCutter extends Component {
 
             const mass = Math.sqrt(piece.calcMass());
             const rotationInertia = mass * mass;
-            piece.rotationSpeed = randomQuaternion(Math.pow(random(0.5, 1), 2) * 2 / rotationInertia);
-            piece.velocity = dir.multiplyScalar(random(0.5, 1) * 0.4 / mass);
+            const rotationSpeedBase = Math.pow(random(0.5, 1, this.random), 2);
+            piece.rotationSpeed = randomQuaternion(rotationSpeedBase * 2 / rotationInertia, this.random);
+            piece.velocity = dir.multiplyScalar(random(0.5, 1, this.random) * 0.4 / mass);
         });
     }
 
     private randomCutPlane(bounds: Bounds) {
         const halfX = (bounds.max.x - bounds.min.x) / 2;
-        const x = halfX + halfX * Math.pow(Math.random(), 1.2) * randomSigned();
+        const x = halfX + halfX * Math.pow(this.random(), 1.2) * randomSigned(this.random);
         const point = this.shipBody.center.clone().setX(x);
-        const angle = Math.pow(Math.random(), 1.2) * Math.PI * 2;
+        const angle = Math.pow(this.random(), 1.2) * Math.PI * 2;
         const normal = new Vector3(Math.cos(angle), 0, Math.sin(angle));
         return new Plane()
             .setFromNormalAndCoplanarPoint(normal, point);
