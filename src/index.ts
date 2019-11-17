@@ -140,6 +140,7 @@ const client = new Client({
     runner,
     socket,
 });
+client.start();
 runner.client = client;
 
 client.join(playerId);
