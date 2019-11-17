@@ -1,7 +1,7 @@
 import _ from "lodash";
 import Component from "../core/Component";
 import Runner from "../core/Runner";
-import { getComponentState, State } from "./common";
+import { getComponentState, ClientState } from "./common";
 import { Command } from "./common";
 
 export interface ClientOptions {
@@ -19,7 +19,7 @@ export default class Client {
     }
 
     public start() {
-        this.socket.on("state", (state: State) => {
+        this.socket.on("state", (state: ClientState) => {
             state.components.forEach((componentState) => {
                 this.runner.restoreComponent(componentState);
             });
@@ -29,8 +29,10 @@ export default class Client {
                 .filter((c) => c.isRemote)
                 .filter((c) => !ids.includes(c.id))
                 .filter((c) => !c.isShadow)
-                .forEach((c) =>
-                    c.destroy());
+                .forEach((c) => {
+                    delete this.runner.clientDestroyed[c.id];
+                    c.destroy()
+                });
         });
     }
 

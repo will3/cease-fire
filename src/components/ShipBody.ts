@@ -14,7 +14,7 @@ import ShipCutter from "./ShipCutter";
 
 type onRadiusUpdatedCallback = (radius: number) => void;
 
-interface Damage {
+export interface Damage {
     coord: Vector3;
     amount: number;
 };
@@ -28,6 +28,8 @@ export default class ShipBody extends Component implements Hitable {
     public readonly center = new Vector3();
     public mass = 0;
     public onRadiusUpdated?: onRadiusUpdatedCallback;
+    public damages: Damage[] = [];
+    private damagesApplied: { [id: string]: boolean } = {};
 
     private object = new Object3D();
     private damageColor = new Color();
@@ -65,6 +67,8 @@ export default class ShipBody extends Component implements Hitable {
             this.massDirty = false;
         }
 
+        this.applyDamages();
+
         if (this.mass === 0) {
             this.ship.destroy();
         }
@@ -77,11 +81,24 @@ export default class ShipBody extends Component implements Hitable {
     public onHit(result: Intersection) {
         if (this.isServer) {
             const coord = this.chunkMesh.getCoord(result.faceIndex!);
-            this.applyDamage({
+            const damage = {
                 coord,
                 amount: 1,
-            });
+            };
+            this.damages.push(damage);
+            this.applyDamages();
         }
+    }
+
+    private applyDamages() {
+        this.damages.forEach((damage, index) => {
+            if (this.damagesApplied[index]) {
+                return;
+            }
+
+            this.applyDamage(damage);
+            this.damagesApplied[index] = true;
+        });
     }
 
     private applyDamage(damage: Damage) {

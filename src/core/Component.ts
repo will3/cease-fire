@@ -75,6 +75,11 @@ export default class Component {
         this.runner.destroyComponent(this);
     }
 
+    public clientDestroy() {
+        this.runner.destroyComponent(this);
+        this.runner.clientDestroyed[this.id] = true;
+    }
+
     public addComponent(component: Component, isChild: boolean = false) {
         this.runner.addComponent(component);
         component.parentComponent = this;

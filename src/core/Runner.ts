@@ -24,17 +24,19 @@ export default class Runner {
     public client!: Client;
     public id = guid();
     public playerId?: string;
+    public clientDestroyed: { [id: string]: boolean } = {};
+    public time = {
+        deltaTime: 1 / defaultFrameRate,
+        elaspedTime: 0,
+        serverTime: 0,
+    };
+
     private scene: Scene;
     private componentFactory: ComponentFactory;
     private input: Input;
     private camera: Camera;
     private physics: Physics;
     private isServer: boolean;
-
-    private time = {
-        deltaTime: 1 / defaultFrameRate,
-        elaspedTime: 0,
-    };
 
     constructor(options: RunnerOptions) {
         this.scene = options.scene;
@@ -54,13 +56,14 @@ export default class Runner {
             return;
         }
 
-        console.log(`spawn ${JSON.stringify(state)}`);
-        const component = this.componentFactory.create(state.type);
-        this.injectDeps(component);
-        component.deserialize(state.state);
-        component.id = state.id;
-        component.ownerId = state.ownerId;
-        this.addComponent(component);
+        if (!this.clientDestroyed[id]) {
+            const component = this.componentFactory.create(state.type);
+            this.injectDeps(component);
+            component.deserialize(state.state);
+            component.id = state.id;
+            component.ownerId = state.ownerId;
+            this.addComponent(component);
+        }
     }
 
     public getComponent(id: string) {
@@ -72,11 +75,27 @@ export default class Runner {
     }
 
     public addComponent(component: Component) {
+        if (component.isRemote) {
+            console.log("add", {
+                id: component.id,
+                type: component.type,
+                isRemote: component.isRemote,
+            });
+        }
+
         this.components[component.id] = component;
         this.injectDeps(component);
     }
 
     public destroyComponent(component: Component) {
+        if (component.isRemote) {
+            console.log("destroy", {
+                id: component.id,
+                type: component.type,
+                isRemote: component.isRemote,
+            });
+        }
+
         component.shouldDestroy = true;
         component.children.forEach((c) => c.destroy());
     }
@@ -113,11 +132,6 @@ export default class Runner {
                 c.onDestroy();
                 c.destroyed = true;
                 delete this.components[c.id];
-                console.log("destroyed", {
-                    id: c.id,
-                    type: c.type,
-                    isRemote: c.isRemote
-                });
             });
 
         this.time.deltaTime = dt;

@@ -7,7 +7,7 @@ import { Contact } from "../core/Physics";
 import { Command } from "../networking/common";
 import ChunkMesh from "./ChunkMesh";
 import EngineParticles from "./EngineParticles";
-import ShipBody from "./ShipBody";
+import ShipBody, { Damage } from "./ShipBody";
 import ShipControl from "./ShipControl";
 import ShipCutter from "./ShipCutter";
 import ShipMovement from "./ShipMovement";
@@ -18,10 +18,17 @@ interface EngineParticleData {
     boost: boolean;
 }
 
+interface ShipData {
+    position: number[];
+    rotation: number[];
+    engineParticleData: EngineParticleData;
+    damages: Damage[];
+}
+
 export default class Ship extends Component {
     public type = "Ship";
     public isRemote = true;
-    public body!: ShipBody;
+    public shipBody!: ShipBody;
     public readonly object = new Object3D();
     public collider!: Collider;
     public color = new Color(0.2, 0.6, 0.8);
@@ -38,23 +45,23 @@ export default class Ship extends Component {
     };
 
     public start() {
-        this.body = new ShipBody();
-        this.body.parent = this.object;
-        this.body.ship = this;
-        this.body.color.copy(this.color);
-        this.addComponent(this.body, true);
+        this.shipBody = new ShipBody();
+        this.shipBody.parent = this.object;
+        this.shipBody.ship = this;
+        this.shipBody.color.copy(this.color);
+        this.addComponent(this.shipBody, true);
 
         this.turrent = new Turrent();
         this.addComponent(this.turrent, true);
         this.turrent.parent = this.object;
 
         const chunkMesh = new ChunkMesh();
-        chunkMesh.parent = this.body.inner;
-        this.body.chunkMesh = chunkMesh;
+        chunkMesh.parent = this.shipBody.inner;
+        this.shipBody.chunkMesh = chunkMesh;
         this.addComponent(chunkMesh, true);
 
         const cutter = new ShipCutter();
-        cutter.shipBody = this.body;
+        cutter.shipBody = this.shipBody;
         this.addComponent(cutter, true);
 
         this.movement = new ShipMovement();
@@ -68,8 +75,8 @@ export default class Ship extends Component {
         if (!this.isServer) {
             const leftEngine = new Object3D();
             const rightEngine = new Object3D();
-            this.body.inner.add(leftEngine);
-            this.body.inner.add(rightEngine);
+            this.shipBody.inner.add(leftEngine);
+            this.shipBody.inner.add(rightEngine);
             const offset = new Vector3(1.5, 1.5, 2.5);
             leftEngine.position.set(1, 0, 5).add(offset);
             rightEngine.position.set(9, 0, 5).add(offset);
@@ -103,16 +110,17 @@ export default class Ship extends Component {
         this.parent.remove(this.object);
     }
 
-    public serialize(): IShipData {
+    public serialize(): ShipData {
         this.startIfNeeded();
         return {
             position: this.object.position.toArray(),
             rotation: this.object.rotation.toArray(),
             engineParticleData: _.clone(this.engineParticleData),
+            damages: this.shipBody.damages,
         };
     }
 
-    public deserialize(data: IShipData) {
+    public deserialize(data: ShipData) {
         this.object.position.fromArray(data.position);
         this.object.rotation.fromArray(data.rotation);
 
@@ -126,6 +134,10 @@ export default class Ship extends Component {
         if (this.rightEngineParticles != null) {
             this.rightEngineParticles.amount = this.engineParticleData.forward;
             this.rightEngineParticles.boost = this.engineParticleData.boost;
+        }
+
+        if (this.shipBody != null) {
+            this.shipBody.damages = data.damages;
         }
     }
 
@@ -142,28 +154,22 @@ export default class Ship extends Component {
     private initCollider() {
         this.collider = new Collider();
         this.addComponent(this.collider, true);
-        this.body.onRadiusUpdated = (r) => {
+        this.shipBody.onRadiusUpdated = (r) => {
             this.collider.radius = r;
         };
         this.collider.onContact = (contact: Contact) => {
-            if (this.body.mass === 0) {
+            if (this.shipBody.mass === 0) {
                 return;
             }
 
             if (contact.collider.static) {
                 this.movement.velocity
-                    .add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(1));
+                    .add(contact.force.clone().multiplyScalar(1 / this.shipBody.mass).multiplyScalar(1));
                 this.movement.velocity.multiplyScalar(0.8);
             } else {
                 this.movement.velocity
-                    .add(contact.force.clone().multiplyScalar(1 / this.body.mass).multiplyScalar(0.2));
+                    .add(contact.force.clone().multiplyScalar(1 / this.shipBody.mass).multiplyScalar(0.2));
             }
         };
     }
-}
-
-interface IShipData {
-    position: number[];
-    rotation: number[];
-    engineParticleData: EngineParticleData;
 }

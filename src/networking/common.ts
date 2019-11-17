@@ -1,8 +1,9 @@
 import Component from "../core/Component";
 import ComponentState from "../core/ComponentState";
 
-export interface State {
+export interface ClientState {
     components: ComponentState[];
+    serverTime: number;
 }
 
 export const getComponentState = (component: Component): ComponentState => {
