@@ -18,6 +18,7 @@ export default class Laser extends Component {
     private static material: SpriteMaterial;
     public type = "Laser";
     public isRemote = true;
+    public destroyByClient = true;
     public object = new Object3D();
     public velocity = 6;
     public scale: number[] = [2.0, 1, 0.8, 0.4];

@@ -38,7 +38,7 @@ export default class ShipBody extends Component implements Hitable {
     private hp = 0;
 
     public start() {
-        this.damageColor = this.color.clone().multiplyScalar(0.4);
+        this.damageColor = this.color.clone().multiplyScalar(0.3);
         this.chunkMesh.material = getMaterial("shipMaterial");
 
         buildShip(this.chunkMesh.chunk, this.color);
@@ -102,7 +102,7 @@ export default class ShipBody extends Component implements Hitable {
     }
 
     private applyDamage(damage: Damage) {
-        const pattern = spherePattern(3, new ValueCurve([1, 0.5], [0, 1]));
+        const pattern = spherePattern(2, new ValueCurve([0.5, 0.25], [0, 1]));
 
         for (const p of pattern) {
             const dc = new Vector3(p[0], p[1], p[2]).add(damage.coord);
@@ -121,7 +121,7 @@ export default class ShipBody extends Component implements Hitable {
 
         this.hp = countVoxels(this.chunk);
 
-        if (this.hp / this.totalHp < 0.8) {
+        if (this.hp / this.totalHp < 0.5) {
             const shipCutter = this.getComponent("ShipCutter") as ShipCutter;
             shipCutter.testCut();
         }

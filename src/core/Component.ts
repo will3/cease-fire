@@ -33,6 +33,7 @@ export default class Component {
     public readonly children: Component[] = [];
     public parentComponent?: Component;
     public isShadow = false;
+    public destroyByClient = false;
 
     public startIfNeeded() {
         if (this.started) {
@@ -73,11 +74,6 @@ export default class Component {
 
     public destroy() {
         this.runner.destroyComponent(this);
-    }
-
-    public clientDestroy() {
-        this.runner.destroyComponent(this);
-        this.runner.clientDestroyed[this.id] = true;
     }
 
     public addComponent(component: Component, isChild: boolean = false) {

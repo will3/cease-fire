@@ -96,6 +96,9 @@ export default class Runner {
             });
         }
 
+        if (component.destroyByClient) {
+            this.clientDestroyed[component.id] = true;
+        }
         component.shouldDestroy = true;
         component.children.forEach((c) => c.destroy());
     }
