@@ -17,7 +17,7 @@ type onRadiusUpdatedCallback = (radius: number) => void;
 export interface Damage {
     coord: Vector3;
     amount: number;
-};
+}
 
 export default class ShipBody extends Component implements Hitable {
     public inner = new Object3D();

@@ -27,7 +27,7 @@ export default class Server {
         this.runner = options.runner;
     }
 
-    start() {
+    public start() {
         this.io.on("connection", (socket) => {
             const connection = {
                 socket,
@@ -58,7 +58,7 @@ export default class Server {
         });
     }
 
-    emitClientStates() {
+    public emitClientStates() {
         _.forEach(this.connections, (connection, id) => {
             const clientState = this.getClientState(id);
             const socket = connection.socket;
@@ -67,7 +67,14 @@ export default class Server {
         });
     }
 
-    getClientState = (id: string): ClientState => {
+    public processCommands() {
+        const commands = this.commandBuffer.splice(0);
+        commands.forEach((c) => {
+            this.processCommand(c);
+        });
+    }
+
+    private getClientState = (id: string): ClientState => {
         const components =
             _(this.runner.components)
                 .filter((c) => c.isRemote)
@@ -82,14 +89,7 @@ export default class Server {
         return state;
     }
 
-    processCommands() {
-        const commands = this.commandBuffer.splice(0);
-        commands.forEach((c) => {
-            this.processCommand(c);
-        });
-    }
-
-    processCommand(command: Command) {
+    private processCommand(command: Command) {
         if (command.type === "spawn") {
             this.runner.restoreComponent(command.data);
             return;
