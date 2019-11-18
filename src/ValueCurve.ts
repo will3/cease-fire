@@ -1,10 +1,23 @@
 export default class ValueCurve {
     public values: number[] = [];
     public intervals: number[] = [];
-    constructor(values: number[], intervals: number[]) {
-        this.values = values;
-        this.intervals = intervals;
+
+    constructor(values: number[] | number, intervals?: number[]) {
+        if (typeof values === "number") {
+            this.values = [values, values];
+            this.intervals = [0, 1];
+        } else {
+            this.values = values;
+            if (intervals == null) {
+                intervals = [];
+                for (let i = 0; i < this.values.length; i++) {
+                    intervals[i] = 1 / (this.values.length - 1) * i;
+                }
+            }
+            this.intervals = intervals;
+        }
     }
+
     public get(t: number) {
         if (t <= 0) {
             return this.values[0];

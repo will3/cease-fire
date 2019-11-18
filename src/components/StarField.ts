@@ -6,7 +6,7 @@ import Noise from "../Noise";
 
 export default class StarField extends Component {
     public object = new Object3D();
-    public number = 1200;
+    public number = 800;
     public seed = "1337";
     private prng!: seedrandom.prng;
 

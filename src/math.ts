@@ -68,3 +68,7 @@ export const randomUniformUnitVectors = (points: Vector3[], numSimulations = 3) 
 
     return points;
 };
+
+export const lerp = (a: number, b: number, r: number) => {
+    return a + (b - a) * r;
+};

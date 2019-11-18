@@ -2,7 +2,7 @@ import { FaceColors, Material, MeshBasicMaterial, SpriteMaterial } from "three";
 
 const cache: { [key: string]: Material } = {};
 
-export type materialTypes = "shipMaterial" | "laser";
+export type materialTypes = "shipMaterial" | "laser" | "engineParticle";
 
 export const getMaterial = (key: materialTypes) => {
     if (cache[key] == null) {
@@ -18,6 +18,10 @@ const createMaterial = (key: materialTypes) => {
                 vertexColors: FaceColors,
             });
         case "laser":
+            return new SpriteMaterial({
+                color: 0xffffff,
+            });
+        case "engineParticle":
             return new SpriteMaterial({
                 color: 0xffffff,
             });
