@@ -27,20 +27,22 @@ runner.addComponent(asteroidField);
 
 const dt = 1000 / 60;
 const server = new Server({
-    io,
-    runner,
-    componentFactory,
+  io,
+  runner,
+  componentFactory,
 });
 
 server.start();
 
 setInterval(() => {
-    scene.updateMatrixWorld();
-    server.processCommands();
-    runner.update(dt / 1000);
-    server.emitClientStates();
+  scene.updateMatrixWorld();
+  server.processCommands();
+  runner.update(dt / 1000);
+  server.emitClientStates();
 }, dt);
 
-httpServer.listen(3000, () => {
-    console.log(":3000");
+const port = process.env.PORT || 3000;
+
+httpServer.listen(port, () => {
+  console.log(`:${port}`);
 });
