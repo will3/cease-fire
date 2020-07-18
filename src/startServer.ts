@@ -1,7 +1,8 @@
 import express from "express";
 import http from "http";
 import SocketIO from "socket.io";
-import { Scene, Vector2, Vector3 } from "three";
+import { Color, Scene, Vector2 } from "three";
+import Ship from "./components/Ship";
 
 import componentFactory from "./componentFactory";
 import AsteroidField from "./components/AsteroidField";
@@ -24,6 +25,16 @@ const asteroidField = new AsteroidField();
 asteroidField.numGrids = numGrids;
 asteroidField.gridSize = gridSize;
 runner.addComponent(asteroidField);
+
+for (let i = 0; i < 4; i++) {
+  for (let j = 0; j < 4; j++) {
+    const s = new Ship();
+    s.object.position.set(i * 15, 0, j * 15);
+    s.object.rotation.y = Math.random() * 2 * Math.PI;
+    s.color = new Color(0.8, 0.6, 0.2);
+    runner.addComponent(s);
+  }
+}
 
 const dt = 1000 / 60;
 const server = new Server({

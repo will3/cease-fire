@@ -34,7 +34,7 @@ const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight,
 const renderer = new WebGLRenderer();
 renderer.gammaFactor = 1.5;
 renderer.gammaOutput = true;
-renderer.setClearColor(new Color(0.05, 0.05, 0.05));
+renderer.setClearColor(new Color(0.025, 0.025, 0.025));
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 const main = document.getElementById("main")!;
@@ -113,17 +113,6 @@ const ship = new Ship();
 ship.ownerId = playerId;
 ship.isShadow = true;
 runner.addComponent(ship);
-
-// for (let i = 0; i < 4; i++) {
-//     for (let j = 0; j < 4; j++) {
-//         const s = new Ship();
-//         runner.addComponent(s);
-//         s.object.position.set(i * 15, 0, j * 15);
-//         s.object.rotation.y = Math.random() * 2 * Math.PI;
-//         s.color = new Color(0.8, 0.6, 0.2);
-//         // public color = new Color(0.2, 0.6, 0.8);
-//     }
-// }
 
 const numGrids = new Vector2(20, 20);
 const gridSize = 10;

@@ -16,7 +16,7 @@ export default class ShipMovement extends Component {
     public maxSpeed = 0.2;
     public engineRunning = false;
     public boost = false;
-    public turnSpeed = 0.05;
+    public turnSpeed = 0.1;
 
     public update() {
         this.updateRigidBody();

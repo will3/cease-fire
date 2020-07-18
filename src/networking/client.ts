@@ -1,7 +1,7 @@
 import _ from "lodash";
 import Component from "../core/Component";
 import Runner from "../core/Runner";
-import { getComponentState, ClientState } from "./common";
+import { ClientState, getComponentState } from "./common";
 import { Command } from "./common";
 
 export interface ClientOptions {

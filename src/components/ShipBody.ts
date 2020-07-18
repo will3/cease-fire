@@ -130,7 +130,7 @@ export default class ShipBody extends Component implements Hitable {
     }
 
     private applyDamage(damage: Damage) {
-        const pattern = spherePattern(1.5, new ValueCurve([1.0, 0.25], [0, 1]));
+        const pattern = spherePattern(3, new ValueCurve([2.0, 0.5], [0, 1]));
 
         for (const p of pattern) {
             const dc = new Vector3(p[0], p[1], p[2]).add(damage.coord);
