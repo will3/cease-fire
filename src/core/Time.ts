@@ -1,5 +1,5 @@
 export interface Time {
-    deltaTime: number;
-    elaspedTime: number;
-    serverTime: number;
+  deltaTime: number;
+  elaspedTime: number;
+  serverTime: number;
 }

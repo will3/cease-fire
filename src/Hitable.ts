@@ -1,4 +1,4 @@
 import { Intersection } from "three";
 export interface Hitable {
-    onHit: (result: Intersection) => void;
+  onHit: (result: Intersection) => void;
 }
