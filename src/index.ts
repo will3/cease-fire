@@ -27,7 +27,7 @@ import StarField from "./components/StarField";
 import { Input } from "./core/Input";
 import Runner from "./core/Runner";
 import guid from "./guid";
-import Client from "./networking/Client";
+import Client from "./networking/client";
 
 const scene = new Scene();
 const camera = new PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);

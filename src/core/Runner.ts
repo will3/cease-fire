@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { Camera, Scene } from "three";
 import guid from "../guid";
-import Client from "../networking/Client";
+import Client from "../networking/client";
 import Component from "./Component";
 import ComponentFactory from "./ComponentFactory";
 import ComponentState from "./ComponentState";
