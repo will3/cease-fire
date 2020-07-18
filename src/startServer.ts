@@ -6,7 +6,7 @@ import { Scene, Vector2, Vector3 } from "three";
 import componentFactory from "./componentFactory";
 import AsteroidField from "./components/AsteroidField";
 import Runner from "./core/Runner";
-import Server from "./networking/Server";
+import Server from "./networking/server";
 
 const app = express();
 const httpServer = http.createServer(app);
