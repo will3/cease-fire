@@ -131,7 +131,9 @@ const center = new Vector3(numGrids.x * gridSize * 0.5, 0, numGrids.y * gridSize
 
 placeShip(ship);
 
-const socket = SocketIOClient("http://localhost:3000");
+const host = process.env.HOST || "http://localhost:3000";
+console.log(`Resolved host ${host}`);
+const socket = SocketIOClient(host);
 
 const client = new Client({
     runner,
