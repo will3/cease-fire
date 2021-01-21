@@ -29,7 +29,7 @@
     "shader-particle-engine": "^1.0.6",
     "shortid": "^2.2.15",
     "simplex-noise": "^2.4.0",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "socket.io-client": "^2.3.0",
     "stats.js": "^0.17.0",
     "three": "^0.110.0",
