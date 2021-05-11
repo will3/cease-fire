@@ -23,7 +23,7 @@
     "dat.gui": "^0.7.6",
     "express": "^4.17.1",
     "keycode": "^2.2.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "postprocessing": "^6.8.8",
     "seedrandom": "^3.0.5",
     "shader-particle-engine": "^1.0.6",
