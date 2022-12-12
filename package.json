@@ -21,7 +21,7 @@
     "@types/shortid": "^0.0.29",
     "@types/stats.js": "^0.17.0",
     "dat.gui": "^0.7.6",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "keycode": "^2.2.0",
     "lodash": "^4.17.15",
     "postprocessing": "^6.8.8",
